@@ -1,0 +1,70 @@
+{%extends 'base.html'%}
+{% load static %}
+{% block title %} <title>Gerador de Histórico | Home</title>
+{% endblock %}
+{%block content%}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><b>HISTÓRICOS PRONTOS</b></h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <a class="btn btn-success btn-sm" href="{% url 'historico' %}" id="btnPdf"><i class="fas fa-plus-circle"></i>
+            <b>Criar
+                Histórico</b></a>
+        <table id="historicos_aluno" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Cod.</th>
+                    <th>Nome</th>
+                    <th>Filiação</th>
+                    <th>Data Nascimento</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Trident</td>
+                    <td>Internet
+                        Explorer 4.0
+                    </td>
+                    <td>Win 95+</td>
+                    <td> 4</td>
+                </tr>
+                <tr>
+                    <td>Trident</td>
+                    <td>Internet
+                        Explorer 5.0
+                    </td>
+                    <td>Win 95+</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td>Trident</td>
+                    <td>Internet
+                        Explorer 5.5
+                    </td>
+                    <td>Win 95+</td>
+                    <td>5.5</td>
+                </tr>
+                <tr>
+                    <td>Trident</td>
+                    <td>Internet
+                        Explorer 6
+                    </td>
+                    <td>Win 98+</td>
+                    <td>6</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+    <!-- /.card-body -->
+</div>
+<!-- /.card -->
+{% block js %}
+<script src="{% static 'js/index/index.js' %}"></script>
+{%endblock js%}
+
+{%endblock%}

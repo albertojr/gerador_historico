@@ -1,4 +1,4 @@
-#!/home/alberto/Documentos/workspace/gerador_historico/gerador_historico/venv/bin/python
+#!/home/alberto/Documentos/workspace/gerador_historico/venv/bin/python
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 
