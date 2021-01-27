@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'widget_tweaks',
+    'django_select2',
     'aluno',
     'historico'
 ]

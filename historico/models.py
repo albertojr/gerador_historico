@@ -42,7 +42,7 @@ class Disciplina(models.Model):
 class Turma(models.Model):
     cod_turma = models.AutoField(primary_key=True)
     ano_turma = models.CharField(verbose_name="Ano", max_length=6, choices=anos_choice)
-    disciplinas = models.ManyToManyField(Disciplina)
+    disciplinas = models.ManyToManyField(Disciplina,related_name='turma_disciplinas')
     carga_hr = models.IntegerField(verbose_name="Oferta Anual")
 
     def __str__(self):

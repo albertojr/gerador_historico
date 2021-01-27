@@ -1,5 +1,145 @@
 {%extends 'base.html'%}
 {% load static %}
+
+{%block header%}
+<div class="col-sm-6">
+    <h1>Alimentar Histórico</h1>
+</div>
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="{% url 'home_geral' %}">Inicio</a></li>
+        <li class="breadcrumb-item active">Alimentar histórico</li>
+
+    </ol>
+</div>
+{%endblock%}
+
 {%block content%}
-<h3>teste</h3>
+
+<div class="card card-secondary">
+    <div class="card-header ">
+        <h5>Selecione a base</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" id="form_busca">
+            {% csrf_token %}
+            <div class="row ">
+                <div class="col-sm-9">
+                    <div class="form-group">
+                        {{ form.aluno }}
+                    </div>
+                </div>
+                <div class="col align-self-start">
+                    <button class="btn btn-info" type="submit" id="btncriartabela">Criar tabela notas</button>
+                    <a class="btn btn-success" href="/admin/historico/turma/add/?_to_field=cod_turma&_popup=1">Add
+                        Aluno</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card card-info">
+    <div class="card-header">
+        <h5 class="card-title">Tabela de notas</h5>
+
+    </div>
+    <div class="card-body">
+        <!-- card dos checkbox -->
+        <div class="card callout callout-info" style="height: 80px;">
+            <div class="card-body">
+                <h6 class="card-title"><b>Esse aluno é:</b></h6>
+                <div class="row">
+                    <div class="form-group col-sm-1 ">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">EJA1</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">EJA2</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">EJA2</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">EJA2</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- fim do card checkbox -->
+
+        <!-- inicio tabela -->
+        <table id="example2" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Aŕea de Conhecimentos</th>
+                    <th>1º Ano</th>
+                    <th>2º Ano</th>
+                    <th>3º Ano</th>
+                    <th>4º Ano</th>
+                    <th>5º Ano</th>
+                    <th>6º Ano</th>
+                    <th>7º Ano</th>
+                    <th>8º Ano</th>
+                    <th>9º Ano</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+                <tr>
+                    <td>Ling. Portuguesa</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+        <!-- fim tabela -->
+        <div class="row" style="margin-top: 30px;">
+            <div class="col-2">
+                <button id="salvar" class="btn btn-success"> SALVAR NOTAS</button>
+            </div>
+            <div class="col-2">
+                <button id="salvar" class="btn btn-secondary"> GERAR PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ form.media.js }}
+{% block js %}
+<script src="{% static 'js/historico.js' %}"></script>
+{%endblock js%}
+
+
 {%endblock%}

@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.contrib.auth.decorators import login_required
-from historico.models import HistoricoAluno
+from historico.models import HistoricoAluno,Turma,Disciplina
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime
-
+from .forms import HistoricoForm
 
 
 # Create your views here.
@@ -29,4 +29,25 @@ def historicos_json(request):
 
 @login_required
 def historico(request):
-    return render(request,'historico.html')
+    context = {}
+    context['form'] = HistoricoForm()
+        
+    return render(request,'historico.html',context)
+
+def tabela_notas_historico(request):
+    cod_aluno = request.GET.get('dropAluno')
+    historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno)
+    turmas = Turma.objects.all().values('cod_turma','ano_turma','carga_hr','disciplinas')
+    
+    print(turmas)
+    # dict tabela_notas = {''}
+    # print(turmas)
+    for item in turmas:
+        disciplina_turma = Disciplina.objects.filter(cod_disciplina = item['disciplinas']).values('cod_disciplina','nome_disciplina')
+        
+        print(disciplina_turma)
+        # if hs_port_turma:
+    #         print(hs_port_turma)
+    data = {'turmas': list(turmas)}
+    return JsonResponse(data)
+

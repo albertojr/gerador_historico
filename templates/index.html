@@ -2,11 +2,19 @@
 {% load static %}
 {% block title %} <title>Gerador de Histórico | Home</title>
 {% endblock %}
+{%block header%}
+<div class="col-sm-6">
+    <h1>Históricos Prontos</h1>
+</div>
+<div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+        <li class="breadcrumb-item"><a href="{% url 'home_geral' %}">Home</a></li>
+    </ol>
+</div>
+{%endblock%}
 {%block content%}
 <div class="card">
-    <div class="card-header">
-        <h3 class="card-title"><b>HISTÓRICOS PRONTOS</b></h3>
-    </div>
+
     <!-- /.card-header -->
     <div class="card-body">
         <a class="btn btn-success btn-sm" href="{% url 'historico' %}" id="btnPdf"><i class="fas fa-plus-circle"></i>
