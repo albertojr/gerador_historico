@@ -1,14 +1,12 @@
 from django import forms
 from django_select2 import forms as s2forms
 from aluno.models import Aluno
+from historico.models import HistoricoAluno
 
 class HistoricoAutoComplete(s2forms.Select2Widget):
     search_fields = [
         "nome_aluno__icontains",
     ]
-
-    # def label_from_instance(PlanoAulaTurma):
-    #     return str(obj.title).upper()
 
 class HistoricoForm(forms.Form):
     aluno = forms.ModelChoiceField(
