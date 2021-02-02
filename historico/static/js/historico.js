@@ -25,7 +25,7 @@ function buscar_dados_tabela() {
     $("#check_eja4").prop('checked', false);
 
     $.ajax({
-        url: "historico/tabela/notas", // url da view
+        url: "tabela/notas", // url da view
         type: "GET", // metodo HTTP
         data: {
             csrfmiddlewaretoken: '{{ csrf_token }}',

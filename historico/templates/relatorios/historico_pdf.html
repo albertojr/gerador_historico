@@ -1,0 +1,272 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historico Parcial</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i,900" rel="stylesheet" />
+
+    <style>
+        @page {
+            size: "A4";
+            margin: 2.5cm 1.5cm 3.5cm 1.5cm;
+
+            @top-left {
+                text-align: left;
+                content: "";
+                width: 50%;
+                height: 100%;
+                top: 10px;
+                background: url('/static/logo.png')no-repeat 0 0;
+                position: fixed;
+                right: 0;
+                bottom: 0;
+                margin-bottom: -10mm;
+                text-align: left;
+
+            }
+
+        }
+
+        body {
+            font-family: Arial Narrow, Arial, sans-serif !important;
+        }
+
+        #duvidas {
+            margin-top: 80px;
+            font-size: 15pt;
+            width: 90%;
+            text-align: center;
+            margin-left: 50px
+        }
+
+        #cabecalho_tabela tbody td {
+            padding: 10px !important;
+        }
+
+        #cabecalho_tabela tbody #meio td {
+            border: 1px solid black;
+
+        }
+
+        #cabecalho_tabela {
+            width: 100%;
+        }
+
+        #cabecalho {
+            border-left: none !important;
+            margin-bottom: 80px !important;
+            border-top-width: 2px !important;
+            border-bottom-width: 2px !important;
+            border-color: rgb(161, 160, 160) !important;
+        }
+
+        #texto2_cabecalho {
+            margin: 15px;
+        }
+
+        #tabela_notas tbody #curriculo {
+            width: 10px;
+            vertical-align: middle;
+        }
+
+        #tabela_notas tbody #disciplinas {
+            width: 210px;
+            text-align: center;
+        }
+
+        #tabela_estudos tbody td {
+            border-width: 1px;
+            border-color: black;
+        }
+
+        #tabela_estudos thead tr th {
+            border-width: 1px;
+            border-color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <br>
+    <h6 class="text-center"> E.E.I.E.F ROTARY- INEP: 23163291</b></h6>
+    <h6 class="text-center">CNPJ: 03.181.790./0001-47 </h6>
+    <h6 class="text-center">AV. JOSÉ HORÁCIO PEQUENO, 1851 </h6>
+    <h6 class="text-center"><i><b>- HISTÓRICO ESCOLAR -</b></i></h6>
+
+    <div class="col-12 text-center">
+        <table id="cabecalho_tabela">
+
+            <tbody>
+                <tr style="border: 1px solid black;">
+                    <td class="text-left" colspan="3"><b>NOME DO (A) ALUNO(A): </b> {{dados_aluno.nome}}</td>
+                </tr>
+
+                <tr style="border: 1px solid black;" id="meio">
+                    <td class="text-left"><b>DATA DE NASC.: </b>{{dados_aluno.dt_nasc}}</td>
+                    <td class="text-left"><b>NATURALIDADE: </b>{{dados_aluno.naturalidade}} - {{dados_aluno.estado}}
+                    </td>
+                    <td class="text-left"><b>NACIONALIDADE: </b>{{dados_aluno.nacionalidade}}</td>
+                </tr>
+
+                <tr style="border: 1px solid black;">
+                    <td class="text-left" colspan="3"><b>FILIAÇÃO:</b>{{dados_aluno.filiacao}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h6 class="text-center" id="texto2_cabecalho"><b>CRENDICIAMENTO: PARECER N°</b>:209/2018-<b>VÁLIDO ATÉ:</b>
+        30/06/2020(Prorrogado pelo CME)</h6>
+    <h6 class="text-center" id="texto2_cabecalho"><b>NOTAS E/OU CONCEITOS</b></h6>
+
+    <table class="table table-bordered" id="tabela_notas">
+        <thead>
+            <tr class="text-center">
+                <th scope="col" colspan="2">
+                    <h5><b>ÁREA DE CONHECIMENTOS</b></h5>
+                </th>
+
+                {% for turma in turmas %}
+                <th scope="col">{{turma.ano_turma}}º Ano</th>
+                {% endfor %}
+            </tr>
+
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="{{qnt_disciplinas}}" id="curriculo" class="text-center">
+                    <b>Curriculo do Ensino Fundamental</b>
+                </td>
+            </tr>
+
+            {% for dados_disciplina in disciplinas %}
+
+            {% if dados_disciplina.tp_disciplina == "fundamental" %}
+            <tr>
+                <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+
+
+            <!-- <tr>
+                <td id="disciplinas">Disciplina 3</td>
+            </tr>
+            <tr>
+                <td id="disciplinas">Disciplina 4</td>
+            </tr>
+            <tr>
+                <td id="disciplinas">Disciplina 5</td>
+            </tr> -->
+            <tr>
+                <td id="disciplinas"><b>Parte diversificada</b></td>
+                <td id="disciplinas">Nome disciplina diversificada</td>
+            </tr>
+            <tr class="text-center">
+                <td colspan="2"><b>Oferta anual</b></td>
+                <td>ds</td>
+            </tr>
+        </tbody>
+    </table>
+    <h6 class="text-center" style="margin-top: 40px;">
+        <b>ESTUDOS REALIZADOS</b>
+    </h6>
+    <table class="table table-bordered" id="tabela_estudos">
+        <thead>
+            <tr>
+                <th>ANO</th>
+                <th>ANO LETIVO</th>
+                <th>ESTABELECIMENTO DE ENSINO</th>
+                <th>MUNÍCIPIO</th>
+                <th>UF</th>
+                <th>RESULTADO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>2º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>3º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>4º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>5º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>6º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>7º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>8º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>9º Ano</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- <div id="duvidas" class="text-center">
+        Crato - CE, 02/02/2020
+    </div> -->
+
+
+</body>
+
+</html>

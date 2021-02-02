@@ -31,7 +31,7 @@ $(document).ready(function () {
 
             {
                 "data": "Action", "render": function (data, type, row, meta) {
-                    return '<button type="button" class="btn btn-info" id="btnPdf" value="Editar"><i class="far fa-file-pdf"></i></button> ';
+                    return '<button class="btn btn-info" id="btnPdf"><i class="far fa-file-pdf"></i></button> ';
                 }
             }
 
@@ -61,3 +61,14 @@ $(document).ready(function () {
     });
 });
 
+
+$("#historicos_aluno tbody").on("click", "tr #btnPdf", function () {
+
+    var table = $('#historicos_aluno').DataTable();
+    var objTableHistoricos = table.row($(this).parents('tr')).data();
+    var cod_aluno = objTableHistoricos['aluno__cod_aluno'];
+    url = "/historicos/relatorio/pdf/" + cod_aluno;
+    window.location.href = url
+
+
+});

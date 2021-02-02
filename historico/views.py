@@ -6,6 +6,10 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime
 from .forms import HistoricoForm
+from django.template.loader import get_template, render_to_string
+import tempfile
+from aluno.models import Aluno
+
 
 
 # Create your views here.
@@ -240,7 +244,6 @@ def atualizar_notas(qsHistoricoNota,item,i):
     else:
         deletar_notas(obj_historico,item)
 
-
 def deletar_notas(obj_historico,item):
     '''Se a nota do front vier vazia e for diferente da nota já cadastrada, é pra deletar'''
     if obj_historico.nota != None:
@@ -264,5 +267,104 @@ def deletar_notas(obj_historico,item):
                     "icone_mensagem": 'error'}
                 return JsonResponse(data)
 
-
+def relatorio_pdf(request,cod_aluno):
     
+
+    qs_aluno = Aluno.objects.filter(cod_aluno=cod_aluno).values()
+    
+    if qs_aluno:
+        ls_turmas = list()
+        ls_disciplinas = list()
+        ls_ejas = list()
+        tem_historico = False
+        dados_aluno = {}
+
+        historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno)
+
+        qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
+        'ano_turma','carga_hr','disciplinas')
+
+        for aluno in qs_aluno:
+            dados_aluno = {'nome':aluno['nome_aluno'],
+            'dt_nasc':aluno['dt_nascimento_aluno'].strftime("%d/%m/%Y"),
+            'naturalidade':aluno['naturalidade_aluno'],
+            'estado':aluno['estado_aluno'],'nacionalidade':aluno['nacionalidade_aluno'],
+            'filiacao':aluno['filiacao_aluno']}
+                
+        if HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno):
+            tem_historico = True
+        
+        for item in qsturmas:
+            disciplina_na_lista = False
+
+            qs_disciplina = Disciplina.objects.filter(cod_disciplina = item['disciplinas']).values(
+                'cod_disciplina','nome_disciplina','tipo_disciplina')
+
+            if qs_disciplina:
+                dict_disciplinas = {'cod_turma':item['cod_turma'],
+                        'cod_disciplina':qs_disciplina[0]['cod_disciplina'],
+                        'nome_disciplina':qs_disciplina[0]['nome_disciplina'],
+                        'tp_disciplina':qs_disciplina[0]['tipo_disciplina']}
+            
+                for lista in ls_disciplinas:
+                    if qs_disciplina[0]['cod_disciplina'] == lista['cod_disciplina']:
+                        disciplina_na_lista = True
+                
+                if not disciplina_na_lista:
+                    ls_disciplinas.append(dict_disciplinas)
+
+        for item in qsturmas.distinct('ano_turma'):
+            dict_turmas = {'cod_turma':item['cod_turma'],'ano_turma':item['ano_turma']}
+            ls_turmas.append(dict_turmas)
+        
+        #add notas na disciplina
+        for item in ls_disciplinas:
+            ls_notas = list()
+            for turmas in ls_turmas:
+                qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno =cod_aluno,
+                disciplina_historico__cod_disciplina=item['cod_disciplina'],
+                turma_historico__cod_turma=turmas['cod_turma']).values('nota','tipo_eja')
+
+                if qs_historicos:
+                    ls_notas.append(qs_historicos[0]['nota'])
+
+                    if qs_historicos[0]['tipo_eja'] != None and qs_historicos[0]['tipo_eja'] not in ls_ejas:
+                        ls_ejas.append(qs_historicos[0]['tipo_eja'])
+                else:
+                    ls_notas.append(None)
+                
+            item.update({'notas':ls_notas})
+
+        return render(request, 'relatorios/historico_pdf.html',
+            {'dados_aluno':dados_aluno,
+            'turmas': ls_turmas,
+            'disciplinas':ls_disciplinas,
+            'ejas':ls_ejas,'historico':tem_historico,
+            'qnt_disciplinas':len(ls_disciplinas)+1})
+        
+    else:
+        return HttpResponse("nenhum aluno encontrato!")
+        
+
+class RenderPdf:
+    '''classe padrão que converte o HTML para pdf'''
+    @staticmethod
+    def render(path: str, params: dict, filename: str, request):
+
+        html_string = render_to_string(
+           path, params)
+        html = HTML(string=html_string, base_url=request.build_absolute_uri())
+        result = html.write_pdf()
+
+        # Creating http response
+        response = HttpResponse(content_type='application/pdf;')
+        response['Content-Disposition'] = 'attachment;filename=%s.pdf' % filename
+        response['Content-Transfer-Encoding'] = 'binary'
+
+        with tempfile.NamedTemporaryFile(delete=True) as output:
+            output.write(result)
+            output.flush()
+            output = open(output.name, 'rb')
+            response.write(output.read())
+
+        return response
