@@ -1,8 +1,28 @@
--r requirements-dev.txt
-
-autopep8==1.5.2
-psycopg2-binary==2.8.3
-# xlrd==1.2.0
-notebook==6.0.3
-django-extensions==3.0.3
-gunicorn==20.0.4
+asgiref==3.3.1
+cairocffi==1.2.0
+CairoSVG==2.5.1
+cffi==1.14.4
+cssselect2==0.4.1
+defusedxml==0.6.0
+dj-database-url==0.5.0
+dj-static==0.0.6
+Django==3.1.5
+django-appconf==1.0.4
+django-extensions==3.1.0
+django-localflavor==3.0.1
+django-select2==7.6.1
+django-widget-tweaks==1.4.8
+html5lib==1.1
+Pillow==8.1.0
+psycopg2-binary==2.8.6
+pycparser==2.20
+Pyphen==0.10.0
+python-decouple==3.4
+python-stdnum==1.15
+pytz==2020.5
+six==1.15.0
+sqlparse==0.4.1
+static3==0.7.0
+tinycss2==1.1.0
+WeasyPrint==52.2
+webencodings==0.5.1
