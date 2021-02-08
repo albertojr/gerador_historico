@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.contrib.auth.decorators import login_required
-from historico.models import HistoricoAluno,Turma,Disciplina
+from historico.models import HistoricoAluno,Turma,Disciplina,EstudosHistorico
 import json
 from django.core.serializers.json import DjangoJSONEncoder
-from datetime import datetime
+from datetime import datetime,date
 from .forms import HistoricoForm
 from django.template.loader import get_template, render_to_string
 import tempfile
 from aluno.models import Aluno
+from weasyprint import HTML, CSS
+
 
 
 
@@ -37,6 +39,7 @@ def historico(request):
     context['form'] = HistoricoForm()
     return render(request,'historico.html',context)
 
+@login_required
 def tabela_notas_historico(request):
     #salvar/atualizar notas
     if request.method == 'POST':
@@ -45,12 +48,9 @@ def tabela_notas_historico(request):
             json_data = request.body
             json_data = json.loads(json_data)
                 
-        except e:
-            data = {
-                "texto_mensagem": 'Erro ao Salvar notas, Json com formato incorreto!!',
-                "mensagem_botao": 'Clique em OK para continuar!',
-                "icone_mensagem": 'info'}
-            return JsonResponse(data)
+        except:
+            data = {"success": False, "error": "Erro ao Salvar notas, Json com formato incorreto!!"}        
+            return JsonResponse(data,status=404)
         
         for item in json_data:
             i = 0
@@ -94,11 +94,8 @@ def tabela_notas_historico(request):
                             obj_historico.save()
 
                         except:
-                            data = {
-                                "texto_mensagem": 'Problemas ao Salvar Notas!!',
-                                "mensagem_botao": 'Clique em OK para continuar!',
-                                "icone_mensagem": 'error'}
-                            return JsonResponse(data)
+                            data = {"success": False, "error": "Problemas ao Salvar Notas!!"}
+                            return JsonResponse(data,status=404)
                         
                     elif item['notas'][i] == "":
                         try:
@@ -128,16 +125,13 @@ def tabela_notas_historico(request):
                                     obj_historico.tipo_eja = 'eja4'
                                     obj_historico.save()
                         except:
-                            data = {
-                                "texto_mensagem": 'Problemas ao Salvar Notas!!',
-                                "mensagem_botao": 'Clique em OK para continuar!',
-                                "icone_mensagem": 'error'}
-                            return JsonResponse(data)
+                            data = {"success": False, "error": "Problemas ao Salvar Notas!!"}                            
+                            return JsonResponse(data,status=404)
 
-        data = {
-            "texto_mensagem": 'Notas salvas com sucesso!!',
-            "mensagem_botao": 'Clique em OK para continuar!',
-            "icone_mensagem": 'success'}  
+        
+        #crud tabela de estudos
+        
+        data = {"success": "Notas salvas com sucesso!"}                            
         return JsonResponse(data)
     
     #puxar lista
@@ -145,6 +139,7 @@ def tabela_notas_historico(request):
         ls_turmas = list()
         ls_disciplinas = list()
         ls_ejas = list()
+        ls_estudos_feitos = list()
         tem_historico = False
 
         cod_aluno = request.GET.get('dropAluno')
@@ -160,7 +155,7 @@ def tabela_notas_historico(request):
 
             qs_disciplina = Disciplina.objects.filter(cod_disciplina = item['disciplinas']).values(
                 'cod_disciplina','nome_disciplina')
-
+            
             if qs_disciplina:
                 dict_disciplinas = {'cod_turma':item['cod_turma'],
                         'cod_disciplina':qs_disciplina[0]['cod_disciplina'],
@@ -175,8 +170,27 @@ def tabela_notas_historico(request):
 
         for item in qsturmas.distinct('ano_turma'):
             dict_turmas = {}
+            dict_estudos = {'ano_turma':item['ano_turma'],'ano_letivo':'','escola':'',
+            'municipio':'','uf':'','resultado':''}
+
             dict_turmas = {'cod_turma':item['cod_turma'],'ano_turma':item['ano_turma']}
             ls_turmas.append(dict_turmas)
+
+            qs_estudos = EstudosHistorico.objects.filter(historico_estudo__aluno__cod_aluno=cod_aluno,
+            ano_turma_estudo__ano_turma=item['ano_turma']).values('ano_turma_estudo__ano_turma','escola_ensino_estudo',
+            'municipio_estudo','estado_estudo','resultado_estudo','ano_letivo_estudo')
+
+            if qs_estudos:
+                for estudos in qs_estudos:
+                    if not estudos['ano_letivo_estudo']:
+                        dict_estudos['ano_letivo'] = ""
+                    else:
+                        dict_estudos['ano_letivo'] = estudos['ano_letivo_estudo'].strftime("%Y")
+                    dict_estudos['escola'] = estudos['escola_ensino_estudo']
+                    dict_estudos['municipio'] = estudos['municipio_estudo']
+                    dict_estudos['uf'] = estudos['estado_estudo']
+                    dict_estudos['resultado'] = estudos['resultado_estudo']
+            ls_estudos_feitos.append(dict_estudos)
         
         #add notas na disciplina
         for item in ls_disciplinas:
@@ -195,8 +209,9 @@ def tabela_notas_historico(request):
                     ls_notas.append(None)
                 
             item.update({'notas':ls_notas})
-
-        data = {'turmas': ls_turmas,'disciplinas':ls_disciplinas,'ejas':ls_ejas,'historico':tem_historico}
+        data = {'turmas': ls_turmas,'disciplinas':ls_disciplinas,
+        'ejas':ls_ejas,'historico':tem_historico,
+        'estudos_feitos':ls_estudos_feitos}
         return JsonResponse(data)
 
 def atualizar_notas(qsHistoricoNota,item,i):
@@ -206,6 +221,7 @@ def atualizar_notas(qsHistoricoNota,item,i):
     if item['notas'][i] != "":
         try:
             obj_historico.nota = float(item['notas'][i])
+            obj_historico.tipo_eja = None
 
             if item['eja1'] == True:
                 if item['nomes_turma'][i] == 1 or item['nomes_turma'][i] == 2 or item['nomes_turma'][i] == 3:
@@ -234,11 +250,8 @@ def atualizar_notas(qsHistoricoNota,item,i):
             obj_historico.save(update_fields=['nota','tipo_eja'])
 
         except:
-            data = {
-                "texto_mensagem": 'Problemas ao Salvar Notas!!',
-                "mensagem_botao": 'Clique em OK para continuar!',
-                "icone_mensagem": 'error'}
-            return JsonResponse(data)
+            data = {"success": False, "error": "Problemas ao Atualizar Notas!!"}
+            return JsonResponse(data,status=404)
     
     #deletar notas
     else:
@@ -250,26 +263,71 @@ def deletar_notas(obj_historico,item):
         try:
             obj_historico.delete()
         except:
-            data = {
-                "texto_mensagem": 'Problemas ao Deletar Notas!!',
-                "mensagem_botao": 'Clique em OK para continuar!',
-                "icone_mensagem": 'error'}
-            return JsonResponse(data)
+            data = {"success": False, "error": "Problemas ao Deletar Notas!!"}
+            return JsonResponse(data,status=404)
 
     elif obj_historico.nota == None:
         if item['eja1'] == False or item['eja2'] == False or item['eja3'] == False or item['eja4'] == False:
             try:
                 obj_historico.delete()
             except:
-                data = {
-                    "texto_mensagem": 'Problemas ao Deletar Notas!!',
-                    "mensagem_botao": 'Clique em OK para continuar!',
-                    "icone_mensagem": 'error'}
-                return JsonResponse(data)
+                data = {"success": False, "error": "Problemas ao Deletar Notas!!"}
+                return JsonResponse(data,status=404)
+
+@login_required
+def salvar_estudos(request):
+    if request.method == 'POST':
+        data = {}
+        try:
+            json_data = request.body
+            json_data = json.loads(json_data)
+                
+        except:
+            data = {"success": False, "error": "Erro ao Salvar notas, Json com formato incorreto!!"}        
+            return JsonResponse(data,status=404)
+        
+        qs_historico = HistoricoAluno.objects.filter(aluno__cod_aluno=json_data[0]['cod_aluno']).first()
+   
+        if qs_historico:
+            for json_estudos in json_data:
+                json_cod_aluno = json_estudos['cod_aluno']
+                json_ano_turma = json_estudos['turma'][0]
+                ano_letivo = json_estudos['ano_letivo']
+                if ano_letivo == '':
+                    ano_letivo = None
+                else:
+                    ano_letivo = "01/01/"+ano_letivo
+                    ano_letivo = datetime.strptime(ano_letivo, '%d/%m/%Y').date()
+
+                qs_estudos_realizados = EstudosHistorico.objects.filter(historico_estudo__aluno__cod_aluno=json_cod_aluno,
+                ano_turma_estudo__ano_turma=json_ano_turma).first()
+
+                if not qs_estudos_realizados:
+                    #salvar tanela de estudos
+                    qs_estudos_realizados = EstudosHistorico()
+                try:
+                    qs_estudos_realizados.historico_estudo = qs_historico
+                    qs_estudos_realizados.ano_turma_estudo = Turma.objects.get(ano_turma=json_ano_turma)
+                    qs_estudos_realizados.ano_letivo_estudo = ano_letivo  
+                    qs_estudos_realizados.escola_ensino_estudo = json_estudos['escola']
+                    qs_estudos_realizados.municipio_estudo = json_estudos['cidade']
+                    qs_estudos_realizados.estado_estudo = json_estudos['estado'].upper()
+                    qs_estudos_realizados.resultado_estudo = json_estudos['resultado']
+                    qs_estudos_realizados.save()
+                
+                except Exception as e:
+                    print(e)
+                    data = {"success": False, "error": "Problemas ao salvar/atulizar Estudos!!"}
+                    return JsonResponse(data,status=404)              
+        else:
+            #não tem historico salvo ainda!
+            data = {"error": "Nenhum histórico encontrado! por favor grave as notas antes de salvar os estudos!"}
+            return JsonResponse(data,status=404)
+    
+    data = {"success": "Estudos salvos com sucesso!"}                            
+    return JsonResponse(data)
 
 def relatorio_pdf(request,cod_aluno):
-    
-
     qs_aluno = Aluno.objects.filter(cod_aluno=cod_aluno).values()
     
     if qs_aluno:
@@ -314,7 +372,10 @@ def relatorio_pdf(request,cod_aluno):
                     ls_disciplinas.append(dict_disciplinas)
 
         for item in qsturmas.distinct('ano_turma'):
-            dict_turmas = {'cod_turma':item['cod_turma'],'ano_turma':item['ano_turma']}
+            dict_turmas = {'cod_turma':item['cod_turma'],
+            'ano_turma':item['ano_turma'],
+            'ch':item['carga_hr']
+            }
             ls_turmas.append(dict_turmas)
         
         #add notas na disciplina
@@ -334,25 +395,36 @@ def relatorio_pdf(request,cod_aluno):
                     ls_notas.append(None)
                 
             item.update({'notas':ls_notas})
+        
+        params = {'dados_aluno':dados_aluno,
+            'turmas': ls_turmas,
+            'disciplinas':ls_disciplinas,
+            'ejas':ls_ejas,'historico':tem_historico,
+            'qnt_disciplinas':len(ls_disciplinas),
+            'data':data_hoje()}
+
+        # return RenderPdf.render('relatorios/historico_pdf.html', 
+        # params, 
+        # 'Histórico - '+dados_aluno['nome'], request)
 
         return render(request, 'relatorios/historico_pdf.html',
             {'dados_aluno':dados_aluno,
             'turmas': ls_turmas,
             'disciplinas':ls_disciplinas,
             'ejas':ls_ejas,'historico':tem_historico,
-            'qnt_disciplinas':len(ls_disciplinas)+1})
+            'qnt_disciplinas':len(ls_disciplinas)+3,
+            'data':data_hoje()})
         
     else:
         return HttpResponse("nenhum aluno encontrato!")
         
-
 class RenderPdf:
     '''classe padrão que converte o HTML para pdf'''
     @staticmethod
     def render(path: str, params: dict, filename: str, request):
-
         html_string = render_to_string(
            path, params)
+
         html = HTML(string=html_string, base_url=request.build_absolute_uri())
         result = html.write_pdf()
 
@@ -368,3 +440,13 @@ class RenderPdf:
             response.write(output.read())
 
         return response
+
+def data_hoje():
+    data_de_hoje = datetime.now()
+    meses_ptbr = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
+                "julho", "agosto", "setembro", "outubro", "novembro",
+                "dezembro"]
+    mes_atual = int(data_de_hoje.strftime("%m"))
+    data_historico = data_de_hoje.strftime(
+        "%d de "+meses_ptbr[mes_atual]+" de %Y")
+    return data_historico

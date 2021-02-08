@@ -40,74 +40,59 @@
     </div>
 </div>
 
-<div class="card card-info">
-    <div class="card-header">
-        <h5 class="card-title">Tabela de notas</h5>
-    </div>
-    <div class="card-body">
-        <!-- card dos checkbox -->
-        <!-- <div class="card callout callout-info" style="height: 80px;display: none;" id="card_check"> -->
-        <!-- <div class="card-body"> -->
-        <!-- <h6 class="card-title"><b>Esse aluno é:</b></h6> -->
-        <!-- <div class="row">
-                    <div class="form-group col-sm-1 ">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="check_eja1"
-                                onchange="onchange_checkbox()">
-                            <label class="form-check-label">EJA1</label>
-                        </div>
-                    </div>
-                    <div class="form-group col-sm-1">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="check_eja2"
-                                onchange="onchange_checkbox()">
-                            <label class="form-check-label">EJA2</label>
-                        </div>
-                    </div>
-                    <div class="form-group col-sm-1">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="check_eja3"
-                                onchange="onchange_checkbox()">
-                            <label class="form-check-label">EJA3</label>
-                        </div>
-                    </div>
-                    <div class="form-group col-sm-1">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="check_eja4"
-                                onchange="onchange_checkbox()">
-                            <label class="form-check-label">EJA4</label>
-                        </div>
-                    </div>
-                </div> -->
-        <!-- </div> -->
-        <!-- </div> -->
-        <!-- fim do card checkbox -->
+<div class="card">
+    <div class="card-header p-2">
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a class="nav-link active" href="#notas" data-toggle="tab">Lançar Notas</a></li>
+            <li class="nav-item"><a class="nav-link" href="#estudos" data-toggle="tab">Lançar Estudos</a></li>
+        </ul>
+    </div><!-- /.card-header -->
+    <form method="POST" id="form_table_notas">
+        <div class="card-body">
 
-        <!-- inicio tabela -->
-        <form method="POST" id="form_table_notas">
-            {% csrf_token %}
-            <div class="card">
-                <div class="card-body" id="table" style="height: 100%;">
+            <div class="tab-content" id="pills-tabContent">
+
+                {% csrf_token %}
+                <div class="tab-pane active" id="notas">
+                    <!-- inicio tabela -->
+                    <div class="card">
+                        <div class="card-body" id="table" style="height: 100%;">
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="estudos">
+
+                    <div class="card">
+                        <div class="card-body" id="table2" style="height: 100%;">
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="row" style="margin-top: 30px;">
                 <div class="col-2">
                     <button id="btn_salvar_notas" class="btn btn-success" type="submit"> <i class="fas fa-save"></i>
                         Salvar</button>
                 </div>
                 <div class="col-sm-2">
-                    <a id="btn_gerar_pdf" href="{% url 'historico_relatorio_pdf' %}" class="btn btn-secondary"> GERAR
+                    <a id="btn_gerar_pdf" href="#" class="btn btn-secondary"> GERAR
                         PDF</a>
                 </div>
             </div>
-        </form>
-    </div>
+    </form>
+
+
+
+</div>
 </div>
 
 {{ form.media.js }}
-{% block js %}
-<script src="{% static 'js/historico.js' %}"></script>
-{%endblock js%}
 
+
+{% block scripts %}
+<link rel="stylesheet" href="{% static 'css/historico.css' %}">
+<script src="{% static 'js/historico.js' %}"></script>
+
+{% endblock %}
 
 {%endblock%}

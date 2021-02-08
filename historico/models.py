@@ -1,5 +1,7 @@
 from django.db import models
 from aluno.models import Aluno
+from localflavor.br.br_states import STATE_CHOICES
+
 
 tp_disciplina = (
     ('fundamental','Ensino Fundamental'),
@@ -43,7 +45,7 @@ class Turma(models.Model):
     cod_turma = models.AutoField(primary_key=True)
     ano_turma = models.CharField(verbose_name="Ano", max_length=6, choices=anos_choice)
     disciplinas = models.ManyToManyField(Disciplina,related_name='turma_disciplinas')
-    carga_hr = models.IntegerField(verbose_name="Oferta Anual")
+    carga_hr = models.IntegerField(verbose_name="Oferta Anual",blank=True,null=True)
     status_turma = models.BooleanField(default=True,verbose_name="Status da turma")
 
     def __str__(self):
@@ -69,3 +71,20 @@ class HistoricoAluno(models.Model):
     def __str__(self):
         return '{}º Ano | Aluno:{} | EJA:{} | Nota:{}'.format(self.turma_historico.ano_turma,
         self.aluno.nome_aluno,self.tipo_eja,self.nota)
+
+class EstudosHistorico(models.Model):
+    cod_estudos_historico = models.AutoField(primary_key=True)
+    historico_estudo = models.ForeignKey('HistoricoAluno',on_delete=models.CASCADE,null=True)
+    ano_turma_estudo = models.ForeignKey('Turma',on_delete=models.CASCADE,null=True)
+    ano_letivo_estudo = models.DateField(null=True)
+    escola_ensino_estudo = models.CharField(max_length=200,null=True)
+    municipio_estudo = models.CharField(max_length=200,null=True)
+    estado_estudo = models.CharField(max_length=2,choices=STATE_CHOICES,null=True)
+    resultado_estudo = models.CharField(max_length=15,null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'estudos_historico'
+
+
+

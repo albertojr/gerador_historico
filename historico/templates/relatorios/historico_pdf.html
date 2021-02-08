@@ -22,11 +22,11 @@
                 width: 50%;
                 height: 100%;
                 top: 10px;
-                background: url('/static/logo.png')no-repeat 0 0;
+                background: url('/static/logo2.png')no-repeat 0 0;
                 position: fixed;
                 right: 0;
                 bottom: 0;
-                margin-bottom: -10mm;
+                margin-bottom: 0mm;
                 text-align: left;
 
             }
@@ -35,6 +35,7 @@
 
         body {
             font-family: Arial Narrow, Arial, sans-serif !important;
+            font-size:16px;
         }
 
         #duvidas {
@@ -48,13 +49,15 @@
         #cabecalho_tabela tbody td {
             padding: 10px !important;
         }
+        #cabecalho_tabela tbody tr{
+            border: 1px solid black !important;
+        }
 
         #cabecalho_tabela tbody #meio td {
             border: 1px solid black;
-
         }
 
-        #cabecalho_tabela {
+        table {
             width: 100%;
         }
 
@@ -84,11 +87,24 @@
             border-width: 1px;
             border-color: black;
         }
-
+        
         #tabela_estudos thead tr th {
             border-width: 1px;
             border-color: black;
         }
+        table tbody td {
+            padding: 8px !important;
+            border: 1px solid black;
+        }
+        
+        table thead tr th {
+            border: 1px solid black;
+        }
+
+        #tabela_notas tbody td {
+           width:8% !important;
+        }
+          
     </style>
 </head>
 
@@ -101,20 +117,19 @@
 
     <div class="col-12 text-center">
         <table id="cabecalho_tabela">
-
             <tbody>
-                <tr style="border: 1px solid black;">
+                <tr>
                     <td class="text-left" colspan="3"><b>NOME DO (A) ALUNO(A): </b> {{dados_aluno.nome}}</td>
                 </tr>
 
-                <tr style="border: 1px solid black;" id="meio">
+                <tr id="meio">
                     <td class="text-left"><b>DATA DE NASC.: </b>{{dados_aluno.dt_nasc}}</td>
                     <td class="text-left"><b>NATURALIDADE: </b>{{dados_aluno.naturalidade}} - {{dados_aluno.estado}}
                     </td>
                     <td class="text-left"><b>NACIONALIDADE: </b>{{dados_aluno.nacionalidade}}</td>
                 </tr>
 
-                <tr style="border: 1px solid black;">
+                <tr>
                     <td class="text-left" colspan="3"><b>FILIAÇÃO:</b>{{dados_aluno.filiacao}}</td>
                 </tr>
             </tbody>
@@ -124,7 +139,7 @@
         30/06/2020(Prorrogado pelo CME)</h6>
     <h6 class="text-center" id="texto2_cabecalho"><b>NOTAS E/OU CONCEITOS</b></h6>
 
-    <table class="table table-bordered" id="tabela_notas">
+    <table id="tabela_notas">
         <thead>
             <tr class="text-center">
                 <th scope="col" colspan="2">
@@ -135,7 +150,6 @@
                 <th scope="col">{{turma.ano_turma}}º Ano</th>
                 {% endfor %}
             </tr>
-
         </thead>
         <tbody>
             <tr>
@@ -145,39 +159,99 @@
             </tr>
 
             {% for dados_disciplina in disciplinas %}
-
-            {% if dados_disciplina.tp_disciplina == "fundamental" %}
-            <tr>
-                <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
-            </tr>
-            {% endif %}
+                {% if dados_disciplina.tp_disciplina == "fundamental" %}
+                    <tr>
+                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                        {% for notas in dados_disciplina.notas %}
+                            {% if notas != None%}
+                                <td id="disciplinas">{{notas}}</td>
+                            {%else%}
+                                <td id="disciplinas">-</td>
+                            {%endif%}
+                        {% endfor %}
+                    </tr>
+                {% endif %}
             {% endfor %}
+            
+            <tr>
+                <td>
+                    <br>
+                </td>
+               {% for turma in turmas %}
+                    <td>
+                        <br>
+                    </td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>
+                    <br>
+                </td>
+               {% for turma in turmas %}
+                    <td>
+                        <br>
+                    </td>
+                {% endfor %}
+            </tr>
+
+            <tr>
+                <td>
+                    <br>
+                </td>
+               {% for turma in turmas %}
+                    <td>
+                        <br>
+                    </td>
+                {% endfor %}
+            </tr>
+            
 
 
-            <!-- <tr>
-                <td id="disciplinas">Disciplina 3</td>
+
+            <tr>
+                <td id="disciplinas" rowspan="2"><b>Parte diversificada</b></td>
+                {% for dados_disciplina in disciplinas %}
+                    {% if dados_disciplina.tp_disciplina == "diversificada" %}
+                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                        {% for notas in dados_disciplina.notas %}
+                            {% if notas != None%}
+                                <td id="disciplinas">{{notas}}</td>
+                            {%else%}
+                                <td id="disciplinas">-</td>
+                            {%endif%}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
             </tr>
             <tr>
-                <td id="disciplinas">Disciplina 4</td>
+                <td>
+                    <br>
+                </td>
+               {% for turma in turmas %}
+                    <td>
+                        <br>
+                    </td>
+                {% endfor %}
             </tr>
-            <tr>
-                <td id="disciplinas">Disciplina 5</td>
-            </tr> -->
-            <tr>
-                <td id="disciplinas"><b>Parte diversificada</b></td>
-                <td id="disciplinas">Nome disciplina diversificada</td>
-            </tr>
+
             <tr class="text-center">
                 <td colspan="2"><b>Oferta anual</b></td>
-                <td>ds</td>
+                {% for turma in turmas %}
+                    {% if turma.ch == None %}
+                        <td> </td>
+                    {% else %}
+                        <td>{{turma.ch}}</td>
+                    {% endif %}
+                {% endfor %}
             </tr>
         </tbody>
     </table>
     <h6 class="text-center" style="margin-top: 40px;">
         <b>ESTUDOS REALIZADOS</b>
     </h6>
-    <table class="table table-bordered" id="tabela_estudos">
-        <thead>
+    <table id="tabela_estudos">
+        <thead class="text-center">
             <tr>
                 <th>ANO</th>
                 <th>ANO LETIVO</th>
@@ -187,8 +261,8 @@
                 <th>RESULTADO</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
+        <tbody class="text-center">
+            <tr >
                 <td>1º Ano</td>
                 <td></td>
                 <td></td>
@@ -262,9 +336,9 @@
             </tr>
         </tbody>
     </table>
-    <!-- <div id="duvidas" class="text-center">
-        Crato - CE, 02/02/2020
-    </div> -->
+   <div id="duvidas" class="text-center">
+        Crato - CE, {{data}}
+    </div> 
 
 
 </body>
