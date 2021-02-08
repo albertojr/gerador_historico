@@ -17,7 +17,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost','192.168.0.6']
+ALLOWED_HOSTS = ['localhost','gerador-historico.herokuapp.com']
 
 # Application definition
 
@@ -122,6 +122,7 @@ STATICFILES_DIRS = [  # definição dos arquivos staticos
     os.path.join(BASE_DIR, "static")
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 LOGIN_URL = 'admin/login'
 LOGIN_REDIRECT_URL = 'home_geral'
