@@ -25,7 +25,7 @@
                 background: url('/static/logo2.png')no-repeat 0 0;
                 position: fixed;
                 right: 0;
-                bottom: 0;
+                bottom: -10;
                 margin-bottom: 0mm;
                 text-align: left;
 
@@ -35,11 +35,11 @@
 
         body {
             font-family: Arial Narrow, Arial, sans-serif !important;
-            font-size:16px;
+            font-size: 16px;
         }
 
         #duvidas {
-            margin-top: 80px;
+            margin-top: 15px;
             font-size: 15pt;
             width: 90%;
             text-align: center;
@@ -47,9 +47,10 @@
         }
 
         #cabecalho_tabela tbody td {
-            padding: 10px !important;
+            padding: 8px !important;
         }
-        #cabecalho_tabela tbody tr{
+
+        #cabecalho_tabela tbody tr {
             border: 1px solid black !important;
         }
 
@@ -87,24 +88,24 @@
             border-width: 1px;
             border-color: black;
         }
-        
+
         #tabela_estudos thead tr th {
             border-width: 1px;
             border-color: black;
         }
+
         table tbody td {
-            padding: 8px !important;
+            padding: 7px !important;
             border: 1px solid black;
         }
-        
+
         table thead tr th {
             border: 1px solid black;
         }
 
         #tabela_notas tbody td {
-           width:8% !important;
+            width: 8% !important;
         }
-          
     </style>
 </head>
 
@@ -159,28 +160,28 @@
             </tr>
 
             {% for dados_disciplina in disciplinas %}
-                {% if dados_disciplina.tp_disciplina == "fundamental" %}
-                    <tr>
-                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
-                        {% for notas in dados_disciplina.notas %}
-                            {% if notas != None%}
-                                <td id="disciplinas">{{notas}}</td>
-                            {%else%}
-                                <td id="disciplinas">-</td>
-                            {%endif%}
-                        {% endfor %}
-                    </tr>
-                {% endif %}
+            {% if dados_disciplina.tp_disciplina == "fundamental" %}
+            <tr>
+                <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                {% for notas in dados_disciplina.notas %}
+                {% if notas != None%}
+                <td id="disciplinas">{{notas}}</td>
+                {%else%}
+                <td id="disciplinas">-</td>
+                {%endif%}
+                {% endfor %}
+            </tr>
+            {% endif %}
             {% endfor %}
-            
+
             <tr>
                 <td>
                     <br>
                 </td>
-               {% for turma in turmas %}
-                    <td>
-                        <br>
-                    </td>
+                {% for turma in turmas %}
+                <td>
+                    <br>
+                </td>
                 {% endfor %}
             </tr>
 
@@ -188,10 +189,10 @@
                 <td>
                     <br>
                 </td>
-               {% for turma in turmas %}
-                    <td>
-                        <br>
-                    </td>
+                {% for turma in turmas %}
+                <td>
+                    <br>
+                </td>
                 {% endfor %}
             </tr>
 
@@ -199,50 +200,47 @@
                 <td>
                     <br>
                 </td>
-               {% for turma in turmas %}
-                    <td>
-                        <br>
-                    </td>
+                {% for turma in turmas %}
+                <td>
+                    <br>
+                </td>
                 {% endfor %}
             </tr>
-            
-
-
 
             <tr>
                 <td id="disciplinas" rowspan="2"><b>Parte diversificada</b></td>
                 {% for dados_disciplina in disciplinas %}
-                    {% if dados_disciplina.tp_disciplina == "diversificada" %}
-                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
-                        {% for notas in dados_disciplina.notas %}
-                            {% if notas != None%}
-                                <td id="disciplinas">{{notas}}</td>
-                            {%else%}
-                                <td id="disciplinas">-</td>
-                            {%endif%}
-                        {% endfor %}
-                    {% endif %}
+                {% if dados_disciplina.tp_disciplina == "diversificada" %}
+                <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                {% for notas in dados_disciplina.notas %}
+                {% if notas != None%}
+                <td id="disciplinas">{{notas}}</td>
+                {%else%}
+                <td id="disciplinas">-</td>
+                {%endif%}
+                {% endfor %}
+                {% endif %}
                 {% endfor %}
             </tr>
             <tr>
                 <td>
                     <br>
                 </td>
-               {% for turma in turmas %}
-                    <td>
-                        <br>
-                    </td>
+                {% for turma in turmas %}
+                <td>
+                    <br>
+                </td>
                 {% endfor %}
             </tr>
 
             <tr class="text-center">
                 <td colspan="2"><b>Oferta anual</b></td>
                 {% for turma in turmas %}
-                    {% if turma.ch == None %}
-                        <td> </td>
-                    {% else %}
-                        <td>{{turma.ch}}</td>
-                    {% endif %}
+                {% if turma.ch == None %}
+                <td> </td>
+                {% else %}
+                <td>{{turma.ch}}</td>
+                {% endif %}
                 {% endfor %}
             </tr>
         </tbody>
@@ -262,83 +260,24 @@
             </tr>
         </thead>
         <tbody class="text-center">
-            <tr >
-                <td>1º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+
+            {% for table_estudos in estudos_feitos %}
             <tr>
-                <td>2º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>{{table_estudos.ano_turma}}º</td>
+                <td>{{table_estudos.ano_letivo}}</td>
+                <td>{{table_estudos.escola}}</td>
+                <td>{{table_estudos.municipio}}</td>
+                <td>{{table_estudos.uf}}</td>
+                <td>{{table_estudos.resultado}}</td>
+
             </tr>
-            <tr>
-                <td>3º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>4º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>5º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>6º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>7º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>8º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>9º Ano</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+            {% endfor %}
+
         </tbody>
     </table>
-   <div id="duvidas" class="text-center">
+    <div id="duvidas" class="text-center">
         Crato - CE, {{data}}
-    </div> 
+    </div>
 
 
 </body>

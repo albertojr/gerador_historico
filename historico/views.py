@@ -11,9 +11,6 @@ import tempfile
 from aluno.models import Aluno
 from weasyprint import HTML, CSS
 
-
-
-
 # Create your views here.
 @login_required
 # @group_required('admin', 'monitor')
@@ -127,9 +124,6 @@ def tabela_notas_historico(request):
                         except:
                             data = {"success": False, "error": "Problemas ao Salvar Notas!!"}                            
                             return JsonResponse(data,status=404)
-
-        
-        #crud tabela de estudos
         
         data = {"success": "Notas salvas com sucesso!"}                            
         return JsonResponse(data)
@@ -145,28 +139,26 @@ def tabela_notas_historico(request):
         cod_aluno = request.GET.get('dropAluno')
 
         qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
-        'ano_turma','carga_hr','disciplinas')
+        'ano_turma','carga_hr','disciplinas__turma_disciplinas__disciplinas__cod_disciplina',
+        'disciplinas__turma_disciplinas__disciplinas__nome_disciplina')
         
         if HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno):
             tem_historico = True
         
-        for item in qsturmas:
+        for item in qsturmas.distinct("disciplinas__turma_disciplinas__disciplinas__cod_disciplina"):
             disciplina_na_lista = False
-
-            qs_disciplina = Disciplina.objects.filter(cod_disciplina = item['disciplinas']).values(
-                'cod_disciplina','nome_disciplina')
+                       
+            # if qs_disciplina:
+            dict_disciplinas = {'cod_turma':item['cod_turma'],
+                    'cod_disciplina':item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'],
+                    'nome_disciplina':item['disciplinas__turma_disciplinas__disciplinas__nome_disciplina']}
+        
+            for ls_disciplina_pronta in ls_disciplinas:
+                if item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'] == ls_disciplina_pronta['cod_disciplina']:
+                    disciplina_na_lista = True
             
-            if qs_disciplina:
-                dict_disciplinas = {'cod_turma':item['cod_turma'],
-                        'cod_disciplina':qs_disciplina[0]['cod_disciplina'],
-                        'nome_disciplina':qs_disciplina[0]['nome_disciplina']}
-            
-                for lista in ls_disciplinas:
-                    if qs_disciplina[0]['cod_disciplina'] == lista['cod_disciplina']:
-                        disciplina_na_lista = True
-                
-                if not disciplina_na_lista:
-                    ls_disciplinas.append(dict_disciplinas)
+            if not disciplina_na_lista:
+                ls_disciplinas.append(dict_disciplinas)
 
         for item in qsturmas.distinct('ano_turma'):
             dict_turmas = {}
@@ -209,6 +201,7 @@ def tabela_notas_historico(request):
                     ls_notas.append(None)
                 
             item.update({'notas':ls_notas})
+
         data = {'turmas': ls_turmas,'disciplinas':ls_disciplinas,
         'ejas':ls_ejas,'historico':tem_historico,
         'estudos_feitos':ls_estudos_feitos}
@@ -334,13 +327,16 @@ def relatorio_pdf(request,cod_aluno):
         ls_turmas = list()
         ls_disciplinas = list()
         ls_ejas = list()
+        ls_estudos_feitos = list()
         tem_historico = False
         dados_aluno = {}
 
         historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno)
 
         qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
-        'ano_turma','carga_hr','disciplinas')
+        'ano_turma','carga_hr','disciplinas__turma_disciplinas__disciplinas__cod_disciplina',
+        'disciplinas__turma_disciplinas__disciplinas__nome_disciplina',
+        'disciplinas__turma_disciplinas__disciplinas__tipo_disciplina')
 
         for aluno in qs_aluno:
             dados_aluno = {'nome':aluno['nome_aluno'],
@@ -348,35 +344,47 @@ def relatorio_pdf(request,cod_aluno):
             'naturalidade':aluno['naturalidade_aluno'],
             'estado':aluno['estado_aluno'],'nacionalidade':aluno['nacionalidade_aluno'],
             'filiacao':aluno['filiacao_aluno']}
-                
-        if HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno):
-            tem_historico = True
-        
-        for item in qsturmas:
+                        
+        for item in qsturmas.distinct("disciplinas__turma_disciplinas__disciplinas__cod_disciplina"):
             disciplina_na_lista = False
-
-            qs_disciplina = Disciplina.objects.filter(cod_disciplina = item['disciplinas']).values(
-                'cod_disciplina','nome_disciplina','tipo_disciplina')
-
-            if qs_disciplina:
-                dict_disciplinas = {'cod_turma':item['cod_turma'],
-                        'cod_disciplina':qs_disciplina[0]['cod_disciplina'],
-                        'nome_disciplina':qs_disciplina[0]['nome_disciplina'],
-                        'tp_disciplina':qs_disciplina[0]['tipo_disciplina']}
+                       
+            # if qs_disciplina:
+            dict_disciplinas = {'cod_turma':item['cod_turma'],
+            'cod_disciplina':item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'],
+            'nome_disciplina':item['disciplinas__turma_disciplinas__disciplinas__nome_disciplina'],
+            'tp_disciplina':item['disciplinas__turma_disciplinas__disciplinas__tipo_disciplina']}
+        
+            for ls_disciplina_pronta in ls_disciplinas:
+                if item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'] == ls_disciplina_pronta['cod_disciplina']:
+                    disciplina_na_lista = True
             
-                for lista in ls_disciplinas:
-                    if qs_disciplina[0]['cod_disciplina'] == lista['cod_disciplina']:
-                        disciplina_na_lista = True
-                
-                if not disciplina_na_lista:
-                    ls_disciplinas.append(dict_disciplinas)
-
+            if not disciplina_na_lista:
+                ls_disciplinas.append(dict_disciplinas)
+            
         for item in qsturmas.distinct('ano_turma'):
             dict_turmas = {'cod_turma':item['cod_turma'],
             'ano_turma':item['ano_turma'],
             'ch':item['carga_hr']
             }
             ls_turmas.append(dict_turmas)
+
+            qs_estudos = EstudosHistorico.objects.filter(historico_estudo__aluno__cod_aluno=cod_aluno,
+            ano_turma_estudo__ano_turma=item['ano_turma']).order_by("ano_turma_estudo__ano_turma").values('ano_turma_estudo__ano_turma','escola_ensino_estudo',
+            'municipio_estudo','estado_estudo','resultado_estudo','ano_letivo_estudo')
+
+            if qs_estudos:
+                dict_estudos = {'ano_turma':item['ano_turma'],'ano_letivo':'','escola':'',
+                'municipio':'','uf':'','resultado':''}
+                for estudos in qs_estudos:
+                    if not estudos['ano_letivo_estudo']:
+                        dict_estudos['ano_letivo'] = ""
+                    else:
+                        dict_estudos['ano_letivo'] = estudos['ano_letivo_estudo'].strftime("%Y")
+                    dict_estudos['escola'] = estudos['escola_ensino_estudo']
+                    dict_estudos['municipio'] = estudos['municipio_estudo']
+                    dict_estudos['uf'] = estudos['estado_estudo']
+                    dict_estudos['resultado'] = estudos['resultado_estudo']
+                ls_estudos_feitos.append(dict_estudos)
         
         #add notas na disciplina
         for item in ls_disciplinas:
@@ -396,24 +404,25 @@ def relatorio_pdf(request,cod_aluno):
                 
             item.update({'notas':ls_notas})
         
-        params = {'dados_aluno':dados_aluno,
+        params =  {'dados_aluno':dados_aluno,
             'turmas': ls_turmas,
-            'disciplinas':ls_disciplinas,
-            'ejas':ls_ejas,'historico':tem_historico,
-            'qnt_disciplinas':len(ls_disciplinas),
-            'data':data_hoje()}
-
-        # return RenderPdf.render('relatorios/historico_pdf.html', 
-        # params, 
-        # 'Histórico - '+dados_aluno['nome'], request)
-
-        return render(request, 'relatorios/historico_pdf.html',
-            {'dados_aluno':dados_aluno,
-            'turmas': ls_turmas,
+            'estudos_feitos':ls_estudos_feitos,
             'disciplinas':ls_disciplinas,
             'ejas':ls_ejas,'historico':tem_historico,
             'qnt_disciplinas':len(ls_disciplinas)+3,
-            'data':data_hoje()})
+            'data':data_hoje()}
+
+        return RenderPdf.render('relatorios/historico_pdf.html', 
+        params, 
+        'Histórico - '+dados_aluno['nome'], request)
+        # return render(request, 'relatorios/historico_pdf.html',
+        #     {'dados_aluno':dados_aluno,
+        #     'turmas': ls_turmas,
+        #     'estudos_feitos':ls_estudos_feitos,
+        #     'disciplinas':ls_disciplinas,
+        #     'ejas':ls_ejas,'historico':tem_historico,
+        #     'qnt_disciplinas':len(ls_disciplinas)+3,
+        #     'data':data_hoje()})
         
     else:
         return HttpResponse("nenhum aluno encontrato!")

@@ -108,7 +108,7 @@ function montar_tabela(json) {
         "paging": false,
         "lengthChange": false,
         "searching": false,
-        "ordering": true,
+        "ordering": false,
         "info": false,
         "autoWidth": false,
         "responsive": true,
@@ -379,7 +379,7 @@ function get_dados_tabela_estudos() {
 
 }
 $('#form_table_notas').on('submit', function (event) {
-    $("#btn_salvar_notas").attr("disabled", true);
+    // $("#btn_salvar_notas").attr("disabled", true);
     event.preventDefault();
     novasNotas = get_notas_tabela(json_geral)
     dadosTabelaEstudos = get_dados_tabela_estudos()
@@ -393,6 +393,7 @@ $('#form_table_notas').on('submit', function (event) {
         dataType: 'json',
         success: function (data) {
             toastr.success('Notas Salvas com Sucesso!')
+            buscar_dados_tabela()
 
             $.ajax({
                 headers: { "X-CSRFToken": $.cookie("csrftoken") },
@@ -431,3 +432,11 @@ $('#form_table_notas').on('submit', function (event) {
     });
 });
 
+function gerar_pdf() {
+    var cod_aluno = $("#id_aluno").val();
+    url = "/historicos/relatorio/pdf/" + cod_aluno;
+
+    cod_button = document.getElementById('btn_gerar_pdf')
+    cod_button.setAttribute("href", url);
+
+};
