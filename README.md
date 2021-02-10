@@ -68,12 +68,16 @@
     DEBUG = True
 
 8. Após instalar todas as dependências e configurar as variáveis ambiente, rode o projeto:
-python manage.py runserver
+
+
+    python manage.py runserver
 
 9. Uma vez com o sistema rodando, basta realizar o comando **migrate** para criar o banco de dados:
+
+
     python manage.py migrate
 
-10. Pronto, o ambiente de desenvolvimento do sistema está rodando!
+10. Pronto, o **ambiente de desenvolvimento do sistema está rodando!**
 
 
 
