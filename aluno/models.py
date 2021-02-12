@@ -12,8 +12,10 @@ class Aluno(models.Model):
                                     choices=STATE_CHOICES)
     nacionalidade_aluno = models.CharField(max_length=50,
                                            verbose_name='Nacionalidade')
-    filiacao_aluno = models.CharField(max_length=400,
-                                      verbose_name='Filiação')
+    filiacao_aluno1 = models.CharField(max_length=250,
+                                      verbose_name='Filiação(Pai)')
+    filiacao_aluno2 = models.CharField(max_length=250,
+    verbose_name='Filiação(Mãe)',null=True,blank=True)
     
     def __str__(self):
         return "%s" % (self.nome_aluno)
