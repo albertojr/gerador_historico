@@ -141,6 +141,7 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
+                                {% block menu %}
                                 <li class="nav-item">
                                     <a href="{% url 'home_geral' %}" class="nav-link active">
                                         <i class="far fa-circle nav-icon"></i>
@@ -159,6 +160,7 @@
                                         <p>Cadastro aluno</p>
                                     </a>
                                 </li>
+                                {% endblock %}
                             </ul>
                         </li>
                     </ul>

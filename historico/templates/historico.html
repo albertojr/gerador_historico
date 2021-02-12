@@ -9,33 +9,38 @@
     <ol class="breadcrumb float-sm-right">
         <li class="breadcrumb-item"><a href="{% url 'home_geral' %}">Inicio</a></li>
         <li class="breadcrumb-item active">Alimentar histórico</li>
-
     </ol>
 </div>
 {%endblock%}
 
 {%block content%}
 
-<div class="card card-secondary">
+<div class="card card-info">
     <div class="card-header ">
         <h5>Selecione um aluno</h5>
     </div>
     <div class="card-body">
         <form method="POST" id="form_busca">
             {% csrf_token %}
-            <div class="row ">
-                <div class="col-sm-8">
+            <div class="row">
+                <label>Selecione um aluno:</label>
+                <div class="col-md-8">
                     <div class="form-group">
                         {{ form.aluno }}
                     </div>
+
                 </div>
-                <div class="col align-self-start">
-                    <button class="btn btn-info" type="submit" id="btncriartabela"><i
-                            class="fas fa-search"></i></button>
-                    <a class="btn btn-success" href="/admin/aluno/aluno/add/" target="_blank">
-                        <i class="fas fa-user-plus"></i> Aluno</a>
+                <div class="col-md-2">
+                    <div class="col">
+                        <button class="btn btn-info " type="submit" id="btncriartabela"><i
+                                class="fas fa-search"></i></button>
+                        <a class="btn btn-success" href="/admin/aluno/aluno/add/" target="_blank">
+                            <i class="fas fa-user-plus"></i> Aluno</a>
+                    </div>
                 </div>
+
             </div>
+
         </form>
     </div>
 </div>
@@ -94,4 +99,25 @@
 
 {% endblock %}
 
+{%endblock%}
+
+{%block menu%}
+<li class="nav-item">
+    <a href="{% url 'home_geral' %}" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Home</p>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="{% url 'historico' %}" class="nav-link active">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Criar histórico</p>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="/admin/aluno/aluno/" target="_blank" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Cadastro aluno</p>
+    </a>
+</li>
 {%endblock%}

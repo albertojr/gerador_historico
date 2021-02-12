@@ -35,19 +35,19 @@
 
         body {
             font-family: Arial Narrow, Arial, sans-serif !important;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         #duvidas {
             margin-top: 15px;
-            font-size: 15pt;
+            font-size: 12pt;
             width: 90%;
             text-align: center;
             margin-left: 50px
         }
 
         #cabecalho_tabela tbody td {
-            padding: 8px !important;
+            padding: 6px !important;
         }
 
         #cabecalho_tabela tbody tr {
@@ -93,9 +93,10 @@
             border-width: 1px;
             border-color: black;
         }
+        
 
         table tbody td {
-            padding: 7px !important;
+            padding: 6px !important;
             border: 1px solid black;
         }
 
@@ -131,7 +132,13 @@
                 </tr>
 
                 <tr>
-                    <td class="text-left" colspan="3"><b>FILIAÇÃO:</b>{{dados_aluno.filiacao}}</td>
+                    <td class="text-left" colspan="3"><b>FILIAÇÃO:</b>{{dados_aluno.filiacao_1}}
+                        {% if dados_aluno.filiacao_2 != '' %}
+                            | {{dados_aluno.filiacao_2}}
+                        {% else%}
+                            {{dados_aluno.filiacao_2}}
+                        {% endif %}
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -148,14 +155,45 @@
                 </th>
 
                 {% for turma in turmas %}
-                <th scope="col">{{turma.ano_turma}}º Ano</th>
+                    {% if turma.ano_turma <= '3' %}
+                        {% if tipo_eja.eja1 == True %}
+                                <th scope="col">{{turma.ano_turma}}º ANO | EJA1</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                        {% endif %}
+                    {% endif %} 
+
+                    {% if turma.ano_turma == '4' or turma.ano_turma == '5'%}
+                        {% if tipo_eja.eja2 == True %}
+                            <th scope="col">{{turma.ano_turma}}º ANO | EJA2</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                        {% endif %} 
+                    {% endif %}  
+
+                    {% if turma.ano_turma == '6' or turma.ano_turma == '7'%}
+                        {% if tipo_eja.eja3 == True %}
+                            <th scope="col">{{turma.ano_turma}}º ANO | EJA3</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                        {% endif %} 
+                    {% endif %} 
+
+                    {% if turma.ano_turma == '8' or turma.ano_turma == '9'%}
+                        {% if tipo_eja.eja4 == True %}
+                            <th scope="col">{{turma.ano_turma}}º ANO | EJA4</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                        {% endif %} 
+                    {% endif %} 
+
                 {% endfor %}
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td rowspan="{{qnt_disciplinas}}" id="curriculo" class="text-center">
-                    <b>Curriculo do Ensino Fundamental</b>
+                    <b>CURRICULO DO ENSINO FUNDAMENTAL</b>
                 </td>
             </tr>
 
@@ -208,7 +246,7 @@
             </tr>
 
             <tr>
-                <td id="disciplinas" rowspan="2"><b>Parte diversificada</b></td>
+                <td id="disciplinas" rowspan="2"><b>PARTE DIVERSIFICADA</b></td>
                 {% for dados_disciplina in disciplinas %}
                 {% if dados_disciplina.tp_disciplina == "diversificada" %}
                 <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
@@ -234,7 +272,7 @@
             </tr>
 
             <tr class="text-center">
-                <td colspan="2"><b>Oferta anual</b></td>
+                <td colspan="2"><b>OFERTA ANUAL</b></td>
                 {% for turma in turmas %}
                 {% if turma.ch == None %}
                 <td> </td>
@@ -260,21 +298,42 @@
             </tr>
         </thead>
         <tbody class="text-center">
-
             {% for table_estudos in estudos_feitos %}
-            <tr>
-                <td>{{table_estudos.ano_turma}}º</td>
-                <td>{{table_estudos.ano_letivo}}</td>
-                <td>{{table_estudos.escola}}</td>
-                <td>{{table_estudos.municipio}}</td>
-                <td>{{table_estudos.uf}}</td>
-                <td>{{table_estudos.resultado}}</td>
-
-            </tr>
+            
+                {% if tipo_eja.eja1 == False or tipo_eja.eja2 == False %}
+                    {% if table_estudos.ano_turma <= '5' %} 
+                        <tr>
+                            <td>{{table_estudos.ano_turma}}º</td>
+                            <td>{{table_estudos.ano_letivo}}</td>
+                            <td>{{table_estudos.escola}}</td>
+                            <td>{{table_estudos.municipio}}</td>
+                            <td>{{table_estudos.uf}}</td>
+                            <td>{{table_estudos.resultado}}</td>
+                        </tr>
+                    {% endif %}
+                {%else%}
+                    <tr>
+                        <td>{{table_estudos.ano_turma}}º</td>
+                        <td>{{table_estudos.ano_letivo}}</td>
+                        <td>{{table_estudos.escola}}</td>
+                        <td>{{table_estudos.municipio}}</td>
+                        <td>{{table_estudos.uf}}</td>
+                        <td>{{table_estudos.resultado}}</td>
+                    </tr>
+                {% endif %}           
             {% endfor %}
-
         </tbody>
     </table>
+    <div id="duvidas" class="text-center">
+        <h6 class="text-center" style="margin-top: 40px;">
+        <b>OBSERVAÇÕES:</b>
+    </h6>
+        <h4>___________________________________________________________________________</h4>
+        <h4>____________________________________________________________________________</h4>
+
+    </div>
+    <br>
+    <br>
     <div id="duvidas" class="text-center">
         Crato - CE, {{data}}
     </div>

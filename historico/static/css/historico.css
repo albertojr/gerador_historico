@@ -2,3 +2,7 @@
     margin-bottom: 0px !important;
     -webkit-appearance: none;
 }
+
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+    line-height:15px!important;
+}

@@ -25,7 +25,7 @@ $(document).ready(function () {
         "columns": [
             { "data": "aluno__cod_aluno", className: "text-center" },
             { "data": "aluno__nome_aluno" },
-            { "data": "aluno__filiacao_aluno", className: "text-center" },
+            { "data": "aluno__filiacao_aluno1", className: "text-center" },
             { "data": "aluno__dt_nascimento_aluno", className: "text-center" },
 
 

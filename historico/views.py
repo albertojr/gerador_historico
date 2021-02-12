@@ -20,7 +20,7 @@ def home_geral(request):
 @login_required
 def historicos_json(request):
     alunos_historico = HistoricoAluno.objects.all().distinct('aluno__cod_aluno').values('aluno__cod_aluno',
-    'aluno__nome_aluno','aluno__dt_nascimento_aluno','aluno__filiacao_aluno')
+    'aluno__nome_aluno','aluno__dt_nascimento_aluno','aluno__filiacao_aluno1','aluno__filiacao_aluno2')
     
     for historico in alunos_historico:
         historico['aluno__dt_nascimento_aluno'] =  historico['aluno__dt_nascimento_aluno'].strftime("%d/%m/%Y")
@@ -326,10 +326,11 @@ def relatorio_pdf(request,cod_aluno):
     if qs_aluno:
         ls_turmas = list()
         ls_disciplinas = list()
-        ls_ejas = list()
         ls_estudos_feitos = list()
         tem_historico = False
         dados_aluno = {}
+        ejas = {'eja1':False,'eja2':False,'Eja3':False,'Eja4':False}
+       
 
         historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno)
 
@@ -339,11 +340,17 @@ def relatorio_pdf(request,cod_aluno):
         'disciplinas__turma_disciplinas__disciplinas__tipo_disciplina')
 
         for aluno in qs_aluno:
-            dados_aluno = {'nome':aluno['nome_aluno'],
+            dados_aluno = {'nome':aluno['nome_aluno'].upper(),
             'dt_nasc':aluno['dt_nascimento_aluno'].strftime("%d/%m/%Y"),
-            'naturalidade':aluno['naturalidade_aluno'],
-            'estado':aluno['estado_aluno'],'nacionalidade':aluno['nacionalidade_aluno'],
-            'filiacao':aluno['filiacao_aluno']}
+            'naturalidade':aluno['naturalidade_aluno'].upper(),
+            'estado':aluno['estado_aluno'].upper(),
+            'nacionalidade':aluno['nacionalidade_aluno'].upper(),
+            'filiacao_1':aluno['filiacao_aluno1'].upper(),
+            'filiacao_2':''}
+
+            if aluno['filiacao_aluno2'] != None:
+                dados_aluno['filiacao_2'] = aluno['filiacao_aluno2'].upper()
+           
                         
         for item in qsturmas.distinct("disciplinas__turma_disciplinas__disciplinas__cod_disciplina"):
             disciplina_na_lista = False
@@ -351,7 +358,7 @@ def relatorio_pdf(request,cod_aluno):
             # if qs_disciplina:
             dict_disciplinas = {'cod_turma':item['cod_turma'],
             'cod_disciplina':item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'],
-            'nome_disciplina':item['disciplinas__turma_disciplinas__disciplinas__nome_disciplina'],
+            'nome_disciplina':item['disciplinas__turma_disciplinas__disciplinas__nome_disciplina'].upper(),
             'tp_disciplina':item['disciplinas__turma_disciplinas__disciplinas__tipo_disciplina']}
         
             for ls_disciplina_pronta in ls_disciplinas:
@@ -380,9 +387,10 @@ def relatorio_pdf(request,cod_aluno):
                         dict_estudos['ano_letivo'] = ""
                     else:
                         dict_estudos['ano_letivo'] = estudos['ano_letivo_estudo'].strftime("%Y")
-                    dict_estudos['escola'] = estudos['escola_ensino_estudo']
-                    dict_estudos['municipio'] = estudos['municipio_estudo']
-                    dict_estudos['uf'] = estudos['estado_estudo']
+                    
+                    dict_estudos['escola'] = estudos['escola_ensino_estudo'].upper()
+                    dict_estudos['municipio'] = estudos['municipio_estudo'].upper()
+                    dict_estudos['uf'] = estudos['estado_estudo'].upper()
                     dict_estudos['resultado'] = estudos['resultado_estudo']
                 ls_estudos_feitos.append(dict_estudos)
         
@@ -397,18 +405,29 @@ def relatorio_pdf(request,cod_aluno):
                 if qs_historicos:
                     ls_notas.append(qs_historicos[0]['nota'])
 
-                    if qs_historicos[0]['tipo_eja'] != None and qs_historicos[0]['tipo_eja'] not in ls_ejas:
-                        ls_ejas.append(qs_historicos[0]['tipo_eja'])
+                    if qs_historicos[0]['tipo_eja'] != None:
+                        if qs_historicos[0]['tipo_eja'] == 'eja1':
+                            ejas['eja1'] = True
+
+                        elif qs_historicos[0]['tipo_eja'] == 'eja2':
+                            ejas['eja2'] = True
+
+                        elif qs_historicos[0]['tipo_eja'] == 'eja3':
+                            ejas['eja3'] = True
+                        
+                        elif qs_historicos[0]['tipo_eja'] == 'eja4':
+                                ejas['eja4'] = True
                 else:
                     ls_notas.append(None)
                 
             item.update({'notas':ls_notas})
-        
+
         params =  {'dados_aluno':dados_aluno,
             'turmas': ls_turmas,
             'estudos_feitos':ls_estudos_feitos,
             'disciplinas':ls_disciplinas,
-            'ejas':ls_ejas,'historico':tem_historico,
+            'tipo_eja':ejas,
+            'historico':tem_historico,
             'qnt_disciplinas':len(ls_disciplinas)+3,
             'data':data_hoje()}
 
@@ -420,7 +439,8 @@ def relatorio_pdf(request,cod_aluno):
         #     'turmas': ls_turmas,
         #     'estudos_feitos':ls_estudos_feitos,
         #     'disciplinas':ls_disciplinas,
-        #     'ejas':ls_ejas,'historico':tem_historico,
+        #     'tipo_eja':ejas,
+        #     'historico':tem_historico,
         #     'qnt_disciplinas':len(ls_disciplinas)+3,
         #     'data':data_hoje()})
         

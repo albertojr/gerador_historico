@@ -11,12 +11,13 @@ class HistoricoAutoComplete(s2forms.Select2Widget):
 class HistoricoForm(forms.Form):
     aluno = forms.ModelChoiceField(
         queryset=Aluno.objects.all(),
+        
         widget=HistoricoAutoComplete(
             attrs={
                 'data-class': 'form-control select2bs4',
                 'data-id': 'drop-alunos',
                 'data-width': '100%',
-                'data-placeholder': 'Selecione um aluno',
+                'data-placeholder': 'Clique aqui',
                 'data-dropdown-css-class': 'select2-gray',
             }
         )
