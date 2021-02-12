@@ -1,6 +1,5 @@
 {%extends 'base.html'%}
 {% load static %}
-
 {%block header%}
 <div class="col-sm-6">
     <h1>Alimentar Histórico</h1>
@@ -12,9 +11,7 @@
     </ol>
 </div>
 {%endblock%}
-
 {%block content%}
-
 <div class="card card-info">
     <div class="card-header ">
         <h5>Selecione um aluno</h5>
@@ -28,7 +25,6 @@
                     <div class="form-group">
                         {{ form.aluno }}
                     </div>
-
                 </div>
                 <div class="col-md-2">
                     <div class="col">
@@ -38,13 +34,10 @@
                             <i class="fas fa-user-plus"></i> Aluno</a>
                     </div>
                 </div>
-
             </div>
-
         </form>
     </div>
 </div>
-
 <div class="card">
     <div class="card-header p-2">
         <ul class="nav nav-pills">
@@ -54,9 +47,7 @@
     </div><!-- /.card-header -->
     <form method="POST" id="form_table_notas">
         <div class="card-body">
-
             <div class="tab-content" id="pills-tabContent">
-
                 {% csrf_token %}
                 <div class="tab-pane active" id="notas">
                     <!-- inicio tabela -->
@@ -66,14 +57,12 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="estudos">
-
                     <div class="card">
                         <div class="card-body" id="table2" style="height: 100%;">
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="row" style="margin-top: 30px;">
                 <div class="col-2">
                     <button id="btn_salvar_notas" class="btn btn-success" type="submit"> <i class="fas fa-save"></i>
@@ -81,22 +70,17 @@
                 </div>
                 <div class="col-sm-2">
                     <a id="btn_gerar_pdf" href="#" class="btn btn-secondary" onclick="gerar_pdf()"><i
-                            class="far fa-file-pdf"></i> GERAR
-                        PDF</a>
+                            class="far fa-file-pdf"></i> GERAR PDF</a>
                 </div>
             </div>
     </form>
-
 </div>
 </div>
-
 {{ form.media.js }}
 
-
 {% block scripts %}
-<link rel="stylesheet" href="{% static 'css/historico.css' %}">
-<script src="{% static 'js/historico.js' %}"></script>
-
+<link rel="stylesheet" href="{% static 'css/historico.css' %}?version=1.0">
+<script src="{% static 'js/historico.js' %}?version=1.0"></script>
 {% endblock %}
 
 {%endblock%}
