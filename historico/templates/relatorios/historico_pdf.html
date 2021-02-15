@@ -28,9 +28,7 @@
                 bottom: -10;
                 margin-bottom: 0mm;
                 text-align: left;
-
             }
-
         }
 
         body {
@@ -38,12 +36,16 @@
             font-size: 14px;
         }
 
-        #duvidas {
-            margin-top: 15px;
-            font-size: 12pt;
+        #data {
+            margin-top: 6px;
             width: 90%;
             text-align: center;
             margin-left: 50px
+        }
+
+        #observacoes {
+            margin-top: 8px;
+            font-size: 10pt;
         }
 
         #cabecalho_tabela tbody td {
@@ -58,16 +60,21 @@
             border: 1px solid black;
         }
 
+        #cabecalho_estudos{
+            margin-top:10px;
+        }
+
         table {
             width: 100%;
         }
 
-        #cabecalho {
-            border-left: none !important;
-            margin-bottom: 80px !important;
-            border-top-width: 2px !important;
-            border-bottom-width: 2px !important;
-            border-color: rgb(161, 160, 160) !important;
+        table tbody td {
+            padding: 5px !important;
+            border: 1px solid black;
+        }
+
+        table thead tr th {
+            border: 1px solid black;
         }
 
         #texto2_cabecalho {
@@ -93,25 +100,13 @@
             border-width: 1px;
             border-color: black;
         }
-        
-
-        table tbody td {
-            padding: 6px !important;
-            border: 1px solid black;
-        }
-
-        table thead tr th {
-            border: 1px solid black;
-        }
-
         #tabela_notas tbody td {
-            width: 8% !important;
+            width: 6% !important;
         }
     </style>
 </head>
 
 <body>
-    <br>
     <h6 class="text-center"> E.E.I.E.F ROTARY- INEP: 23163291</b></h6>
     <h6 class="text-center">CNPJ: 03.181.790./0001-47 </h6>
     <h6 class="text-center">AV. JOSÉ HORÁCIO PEQUENO, 1851 </h6>
@@ -134,9 +129,9 @@
                 <tr>
                     <td class="text-left" colspan="3"><b>FILIAÇÃO:</b>{{dados_aluno.filiacao_1}}
                         {% if dados_aluno.filiacao_2 != '' %}
-                            | {{dados_aluno.filiacao_2}}
+                        | {{dados_aluno.filiacao_2}}
                         {% else%}
-                            {{dados_aluno.filiacao_2}}
+                        {{dados_aluno.filiacao_2}}
                         {% endif %}
                     </td>
                 </tr>
@@ -155,39 +150,38 @@
                 </th>
 
                 {% for turma in turmas %}
-                    {% if turma.ano_turma <= '3' %}
-                        {% if tipo_eja.eja1 == True %}
-                                <th scope="col">{{turma.ano_turma}}º ANO | EJA1</th>
-                        {%else%}
-                            <th scope="col">{{turma.ano_turma}}º ANO</th>
-                        {% endif %}
-                    {% endif %} 
+                {% if turma.ano_turma <= '3' %} {% if tipo_eja.eja1 == True %} <th scope="col">{{turma.ano_turma}}º ANO |
+                    EJA1</th>
+                    {%else%}
+                    <th scope="col">{{turma.ano_turma}}º ANO</th>
+                    {% endif %}
+                    {% endif %}
 
                     {% if turma.ano_turma == '4' or turma.ano_turma == '5'%}
-                        {% if tipo_eja.eja2 == True %}
-                            <th scope="col">{{turma.ano_turma}}º ANO | EJA2</th>
-                        {%else%}
-                            <th scope="col">{{turma.ano_turma}}º ANO</th>
-                        {% endif %} 
-                    {% endif %}  
+                    {% if tipo_eja.eja2 == True %}
+                    <th scope="col">{{turma.ano_turma}}º ANO | EJA2</th>
+                    {%else%}
+                    <th scope="col">{{turma.ano_turma}}º ANO</th>
+                    {% endif %}
+                    {% endif %}
 
                     {% if turma.ano_turma == '6' or turma.ano_turma == '7'%}
-                        {% if tipo_eja.eja3 == True %}
-                            <th scope="col">{{turma.ano_turma}}º ANO | EJA3</th>
-                        {%else%}
-                            <th scope="col">{{turma.ano_turma}}º ANO</th>
-                        {% endif %} 
-                    {% endif %} 
+                    {% if tipo_eja.eja3 == True %}
+                    <th scope="col">{{turma.ano_turma}}º ANO | EJA3</th>
+                    {%else%}
+                    <th scope="col">{{turma.ano_turma}}º ANO</th>
+                    {% endif %}
+                    {% endif %}
 
                     {% if turma.ano_turma == '8' or turma.ano_turma == '9'%}
-                        {% if tipo_eja.eja4 == True %}
-                            <th scope="col">{{turma.ano_turma}}º ANO | EJA4</th>
-                        {%else%}
-                            <th scope="col">{{turma.ano_turma}}º ANO</th>
-                        {% endif %} 
-                    {% endif %} 
+                    {% if tipo_eja.eja4 == True %}
+                    <th scope="col">{{turma.ano_turma}}º ANO | EJA4</th>
+                    {%else%}
+                    <th scope="col">{{turma.ano_turma}}º ANO</th>
+                    {% endif %}
+                    {% endif %}
 
-                {% endfor %}
+                    {% endfor %}
             </tr>
         </thead>
         <tbody>
@@ -283,7 +277,7 @@
             </tr>
         </tbody>
     </table>
-    <h6 class="text-center" style="margin-top: 40px;">
+    <h6 id="cabecalho_estudos" class="text-center">
         <b>ESTUDOS REALIZADOS</b>
     </h6>
     <table id="tabela_estudos">
@@ -299,43 +293,41 @@
         </thead>
         <tbody class="text-center">
             {% for table_estudos in estudos_feitos %}
-            
-                {% if tipo_eja.eja1 == False or tipo_eja.eja2 == False %}
-                    {% if table_estudos.ano_turma <= '5' %} 
-                        <tr>
-                            <td>{{table_estudos.ano_turma}}º</td>
-                            <td>{{table_estudos.ano_letivo}}</td>
-                            <td>{{table_estudos.escola}}</td>
-                            <td>{{table_estudos.municipio}}</td>
-                            <td>{{table_estudos.uf}}</td>
-                            <td>{{table_estudos.resultado}}</td>
-                        </tr>
-                    {% endif %}
+
+            {% if tipo_eja.eja1 == False or tipo_eja.eja2 == False %}
+            {% if table_estudos.ano_turma <= '5' %} <tr>
+                <td>{{table_estudos.ano_turma}}º</td>
+                <td>{{table_estudos.ano_letivo}}</td>
+                <td>{{table_estudos.escola}}</td>
+                <td>{{table_estudos.municipio}}</td>
+                <td>{{table_estudos.uf}}</td>
+                <td>{{table_estudos.resultado}}</td>
+                </tr>
+                {% endif %}
                 {%else%}
-                    <tr>
-                        <td>{{table_estudos.ano_turma}}º</td>
-                        <td>{{table_estudos.ano_letivo}}</td>
-                        <td>{{table_estudos.escola}}</td>
-                        <td>{{table_estudos.municipio}}</td>
-                        <td>{{table_estudos.uf}}</td>
-                        <td>{{table_estudos.resultado}}</td>
-                    </tr>
-                {% endif %}           
-            {% endfor %}
+                <tr>
+                    <td>{{table_estudos.ano_turma}}º</td>
+                    <td>{{table_estudos.ano_letivo}}</td>
+                    <td>{{table_estudos.escola}}</td>
+                    <td>{{table_estudos.municipio}}</td>
+                    <td>{{table_estudos.uf}}</td>
+                    <td>{{table_estudos.resultado}}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
         </tbody>
     </table>
-    <div id="duvidas" class="text-center">
-        <h6 class="text-center" style="margin-top: 40px;">
-        <b>OBSERVAÇÕES:</b>
-    </h6>
-        <h4>___________________________________________________________________________</h4>
-        <h4>____________________________________________________________________________</h4>
-
+    <div id="observacoes" >
+        <h6 class="text-center">
+            <b>OBSERVAÇÕES:</b>
+        </h6>
+        <h4 class="text-center">___________________________________________________________________________</h4>
+        <h4 class="text-center">____________________________________________________________________________</h4>
     </div>
     <br>
     <br>
-    <div id="duvidas" class="text-center">
-        Crato - CE, {{data}}
+    <div id="data" class="text-center">
+    <h5 class="text-center"> Crato - CE, {{data}}</h5>
     </div>
 
 

@@ -435,14 +435,7 @@ def relatorio_pdf(request,cod_aluno):
         params, 
         'Histórico - '+dados_aluno['nome'], request)
         # return render(request, 'relatorios/historico_pdf.html',
-        #     {'dados_aluno':dados_aluno,
-        #     'turmas': ls_turmas,
-        #     'estudos_feitos':ls_estudos_feitos,
-        #     'disciplinas':ls_disciplinas,
-        #     'tipo_eja':ejas,
-        #     'historico':tem_historico,
-        #     'qnt_disciplinas':len(ls_disciplinas)+3,
-        #     'data':data_hoje()})
+        #     params)
         
     else:
         return HttpResponse("nenhum aluno encontrato!")
