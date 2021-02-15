@@ -387,6 +387,8 @@ $('#form_table_notas').on('submit', function (event) {
     event.preventDefault();
     novasNotas = get_notas_tabela(json_geral)
     dadosTabelaEstudos = get_dados_tabela_estudos()
+    $("#btn_salvar_notas").attr("disabled", true);
+
 
     $.ajax({
         headers: { "X-CSRFToken": $.cookie("csrftoken") },
