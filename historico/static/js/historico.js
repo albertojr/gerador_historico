@@ -1,6 +1,7 @@
+$("#btn_salvar_notas").attr("disabled", true);
+
 var json_geral;
 
-// swal(data.mensagem, "Clique no botão para continuar!", "success");
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -33,6 +34,9 @@ function buscar_dados_tabela() {
         success: function (json) {
             json_geral = json
             $("#card_check").css("display", "block");
+            $("#btn_salvar_notas").attr("disabled", false);
+            $("#btn_gerar_pdf").removeClass('disabled');
+
 
             if (json.historico == false) {
                 Swal.fire({

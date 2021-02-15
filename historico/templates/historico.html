@@ -12,7 +12,7 @@
 </div>
 {%endblock%}
 {%block content%}
-<div class="card card-info">
+<div class="card card-primary">
     <div class="card-header ">
         <h5>Selecione um aluno</h5>
     </div>
@@ -20,7 +20,7 @@
         <form method="POST" id="form_busca">
             {% csrf_token %}
             <div class="row">
-                <label>Selecione um aluno:</label>
+                <label>Alunos:</label>
                 <div class="col-md-8">
                     <div class="form-group">
                         {{ form.aluno }}
@@ -28,7 +28,7 @@
                 </div>
                 <div class="col-md-2">
                     <div class="col">
-                        <button class="btn btn-info " type="submit" id="btncriartabela"><i
+                        <button class="btn btn-secondary " type="submit" id="btncriartabela"><i
                                 class="fas fa-search"></i></button>
                         <a class="btn btn-success" href="/admin/aluno/aluno/add/" target="_blank">
                             <i class="fas fa-user-plus"></i> Aluno</a>
@@ -63,13 +63,11 @@
                     </div>
                 </div>
             </div>
-            <div class="row" style="margin-top: 30px;">
-                <div class="col-2">
-                    <button id="btn_salvar_notas" class="btn btn-success" type="submit"> <i class="fas fa-save"></i>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-10">
+                    <button id="btn_salvar_notas" class="btn btn-primary" type="submit"> <i class="fas fa-save"></i>
                         Salvar</button>
-                </div>
-                <div class="col-sm-2">
-                    <a id="btn_gerar_pdf" href="#" class="btn btn-secondary" onclick="gerar_pdf()"><i
+                    <a id="btn_gerar_pdf" href="#" class="disabled btn btn-info" onclick="gerar_pdf()"><i
                             class="far fa-file-pdf"></i> GERAR PDF</a>
                 </div>
             </div>
