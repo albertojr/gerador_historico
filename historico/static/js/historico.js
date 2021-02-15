@@ -15,6 +15,7 @@ $('#form_busca').on('submit', function (event) {//evento do form(filters)
     // $("#btncriartabela").attr("disabled", true);
     event.preventDefault();
     buscar_dados_tabela()
+
 });
 
 function buscar_dados_tabela() {
@@ -36,7 +37,6 @@ function buscar_dados_tabela() {
             $("#card_check").css("display", "block");
             $("#btn_salvar_notas").attr("disabled", false);
             $("#btn_gerar_pdf").removeClass('disabled');
-
 
             if (json.historico == false) {
                 Swal.fire({
@@ -74,7 +74,6 @@ function buscar_dados_tabela() {
 }
 
 function montar_tabela(json) {
-    window.scrollBy(0, 400); // ScrollDown na página
 
     var tableHeaders = '';
     var tbodyColunas = '';
@@ -107,7 +106,7 @@ function montar_tabela(json) {
         },
         stateSave: true,
         "dom": '<"toolbar">frtip',
-        "tablescrollY": "390px",
+        "scrollY": "300px",
         "scrollCollapse": true,
         "paging": false,
         "lengthChange": false,
@@ -137,7 +136,7 @@ function montar_tabela(json) {
         });
 
     $("div.toolbar").html(
-        '<h6 class="card-title"><b>Esse aluno é:</b></h6>' +
+        '<h6 class="card-title">Esse aluno é:</h6>' +
         '<div class="row">' +
         '<div class="form-group col-sm-1 ">' +
         '<div class="form-check">' +
@@ -258,6 +257,8 @@ function montar_tabela_estudos(json) {
             $(table.cells().nodes()).removeClass('highlight');
             $(table.column(colIdx).nodes()).addClass('highlight');
         });
+    window.scrollBy(0, 500); // ScrollDown na página
+
 }
 
 function onchange_checkbox() {
