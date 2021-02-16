@@ -421,7 +421,7 @@ def relatorio_pdf(request,cod_aluno):
                     ls_notas.append(None)
                 
             item.update({'notas':ls_notas})
-
+        print(data_hoje(),"data de hj")
         params =  {'dados_aluno':dados_aluno,
             'turmas': ls_turmas,
             'estudos_feitos':ls_estudos_feitos,
@@ -431,11 +431,11 @@ def relatorio_pdf(request,cod_aluno):
             'qnt_disciplinas':len(ls_disciplinas)+3,
             'data':data_hoje()}
 
-        return RenderPdf.render('relatorios/historico_pdf.html', 
-        params, 
-        'Histórico - '+dados_aluno['nome'], request)
-        # return render(request, 'relatorios/historico_pdf.html',
-        #     params)
+        # return RenderPdf.render('relatorios/historico_pdf.html', 
+        # params, 
+        # 'Histórico - '+dados_aluno['nome'], request)
+        return render(request, 'relatorios/historico_pdf.html',
+            params)
         
     else:
         return HttpResponse("nenhum aluno encontrato!")
@@ -465,7 +465,7 @@ class RenderPdf:
 
 def data_hoje():
     data_de_hoje = datetime.now()
-    meses_ptbr = ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
+    meses_ptbr = ["","janeiro", "fevereiro", "março", "abril", "maio", "junho",
                 "julho", "agosto", "setembro", "outubro", "novembro",
                 "dezembro"]
     mes_atual = int(data_de_hoje.strftime("%m"))
