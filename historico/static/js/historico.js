@@ -109,7 +109,7 @@ function montar_tabela(json) {
         "scrollY": "300px",
         "scrollCollapse": true,
         "paging": false,
-        "lengthChange": false,
+        "lengthChange": true,
         "searching": false,
         "ordering": false,
         "info": false,
@@ -257,7 +257,6 @@ function montar_tabela_estudos(json) {
             $(table.cells().nodes()).removeClass('highlight');
             $(table.column(colIdx).nodes()).addClass('highlight');
         });
-    window.scrollBy(0, 500); // ScrollDown na página
 
 }
 
