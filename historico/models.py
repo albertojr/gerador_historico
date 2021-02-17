@@ -34,7 +34,7 @@ class Disciplina(models.Model):
                                        max_length=30, choices=tp_disciplina)
 
     def __str__(self):
-        return '{} - {}'.format(self.cod_disciplina, self.nome_disciplina)
+        return '{}'.format(self.nome_disciplina)
 
     class Meta:
         managed = True
@@ -57,7 +57,7 @@ class HistoricoAluno(models.Model):
     cod_historico = models.AutoField(primary_key=True)
     turma_historico = models.ForeignKey(Turma,verbose_name='Turmas',on_delete=models.CASCADE)
     disciplina_historico = models.ForeignKey(Disciplina,on_delete = models.CASCADE,blank=True, null=True)
-    nota = models.DecimalField(max_digits=5, decimal_places=1,verbose_name='Nota',blank=True, null=True)
+    nota = models.DecimalField(max_digits=2, decimal_places=1,verbose_name='Nota',blank=True, null=True)
     tipo_eja = models.CharField(verbose_name='EJA', choices=ejas,max_length=6,blank=True, null=True)
     aluno = models.ForeignKey('aluno.Aluno',related_name='alunos' ,on_delete=models.CASCADE)
 

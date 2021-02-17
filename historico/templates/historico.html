@@ -24,9 +24,9 @@
             {% csrf_token %}
             <div class="row">
                 <label>Alunos:</label>
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <div class="form-group">
-                        {{ form.aluno }}
+                        {% render_field formset.0.aluno class="form-control select2bs4"%}
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -72,17 +72,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                               
-
-                                <div id="order" class="form-inline form-group">
-                                    {% for item_order_form in formset %}
-                                        <div id="item-{{ forloop.counter0 }}">
-                                            {{ item_order_form.nota }}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                                   
-                            
+                                <tr>
+                                    <td style="width:50px">
+                                        {% render_field formset.0.disciplinas style="width:120px" class="form-group select2bs4"%}
+                                    </td>
+                                        {% for notas_formset in formset %}
+                                            <td style="width:300px">
+                                                <div id="item-{{ forloop.counter0 }}" class="input-group mb-1">
+                                                    {% render_field notas_formset.nota class="form-control" placeholder="Digite" %}
+                                                </div>
+                                            </td>
+                                        {% endfor %}
+                                    <td>
+                                        <button class="btn btn-success" type="button"><i class="fas fa-plus-circle"></i></button>    
+                                    </td>   
+                                </tr>           
                                 </tbody>
                             </table>
                         </div>
@@ -111,6 +115,29 @@
 {% block scripts %}
 <link rel="stylesheet" href="{% static 'css/historico.css' %}?version=1.2">
 <script src="{% static 'js/historico.js' %}?version=1.2"></script>
+<script>
+        $('.select2bs4').select2();
+
+</script>
+<script>
+    $(document).ready(function(){
+        $("#add-item").click(function(ev) {
+            ev.preventDefault();
+            var count = $('#order').children().length;
+            var tmplMarkup = $("#item-order").html();
+            var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+            $("div#order").append(compiledTmpl);
+
+            // update form count
+            $('#id_product-TOTAL_FORMS').attr('value', count + 1);
+
+            // some animate to scroll to view our new form
+            $('html, body').animate({
+                scrollTop: $("#add-item").position().top-200
+            }, 800);
+        });
+    });
+</script>
 
 
 {% endblock %}

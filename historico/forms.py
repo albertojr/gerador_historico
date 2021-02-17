@@ -15,7 +15,7 @@ class DisciplinaSelect2(s2forms.Select2Widget):
     ]
 
 class HistoricoForm(forms.Form):
-    aluno = forms.ModelChoiceField(
+    alunos = forms.ModelChoiceField(
         queryset=Aluno.objects.all(),
         widget=AlunoAutoComplete(
             attrs={
@@ -28,28 +28,17 @@ class HistoricoForm(forms.Form):
         )
     )
 
-
-
     class Meta:
         model = HistoricoAluno
-        exclude = ['cod_historico']
+        fields = ('aluno',)
 
 class Form_tabela_historico(forms.ModelForm):
     disciplinas = forms.ModelChoiceField(
         queryset=Disciplina.objects.all().order_by('nome_disciplina'),
-        widget=DisciplinaSelect2(
-            attrs={
-                'data-class': 'form-control select2bs4',
-                'data-width': '80%',
-                'data-placeholder': 'Clique aqui',
-                'data-dropdown-css-class': 'select2-gray',
-                
-            }
-        )
     )
 
     class Meta:
         model = HistoricoAluno
-        fields = ('nota',)
+        fields = ('nota','disciplinas','aluno')
 
     

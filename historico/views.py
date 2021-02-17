@@ -37,9 +37,7 @@ def historico(request):
     context = {}
     historico_form = HistoricoAluno()
     notas_order_formset = inlineformset_factory(Disciplina,HistoricoAluno, form=Form_tabela_historico, 
-    extra=8, can_delete=False, min_num=1, validate_min=True)
-
-    
+    extra=8, can_delete=True, min_num=1, validate_min=True)
 
     if request.method == 'POST':
         forms = Form_tabela_historico(request.POST, request.FILES, instance=historico_form, prefix='main')
@@ -59,11 +57,13 @@ def historico(request):
         'forms': forms,
         'formset': formset,
     }
+    print(context['formset'][0])
     return render(request, 'historico.html', context)
 
 @login_required
 def add_historico(request):
     context = {}
+    aluno_form = HistoricoForm()
     historico_form = HistoricoAluno()
     notas_order_formset = inlineformset_factory(Disciplina,HistoricoAluno, form=historico_form, extra=1, can_delete=False, min_num=1, validate_min=True)
 
@@ -85,6 +85,7 @@ def add_historico(request):
         'forms': forms,
         'formset': formset,
     }
+    print(context['formset'][0])
     return render(request, 'historico.html', context)
 
 
