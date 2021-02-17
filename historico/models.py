@@ -44,13 +44,10 @@ class Disciplina(models.Model):
 class Turma(models.Model):
     cod_turma = models.AutoField(primary_key=True)
     ano_turma = models.CharField(verbose_name="Ano", max_length=6, choices=anos_choice)
-    disciplinas = models.ManyToManyField(Disciplina,related_name='turma_disciplinas')
     carga_hr = models.IntegerField(verbose_name="Oferta Anual",blank=True,null=True)
     status_turma = models.BooleanField(default=True,verbose_name="Status da turma")
 
-    def __str__(self):
-        return '{}º Ano | Disciplinas({})'.format(self.ano_turma[:20], 
-                ' - '.join(self.disciplinas.all().values_list('nome_disciplina',flat= True)))
+  
 
     class Meta:
         managed = True

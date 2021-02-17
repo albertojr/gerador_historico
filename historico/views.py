@@ -5,11 +5,13 @@ from historico.models import HistoricoAluno,Turma,Disciplina,EstudosHistorico
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime,date
-from .forms import HistoricoForm
+from .forms import HistoricoForm,Form_tabela_historico
 from django.template.loader import get_template, render_to_string
 import tempfile
 from aluno.models import Aluno
 from weasyprint import HTML, CSS
+from django.forms.models import inlineformset_factory
+
 
 # Create your views here.
 @login_required
@@ -33,8 +35,60 @@ def historicos_json(request):
 @login_required
 def historico(request):
     context = {}
-    context['form'] = HistoricoForm()
-    return render(request,'historico.html',context)
+    historico_form = HistoricoAluno()
+    notas_order_formset = inlineformset_factory(Disciplina,HistoricoAluno, form=Form_tabela_historico, 
+    extra=8, can_delete=False, min_num=1, validate_min=True)
+
+    
+
+    if request.method == 'POST':
+        forms = Form_tabela_historico(request.POST, request.FILES, instance=historico_form, prefix='main')
+        formset = item_order_formset(request.POST, request.FILES, instance=historico_form, prefix='notas')
+
+        if forms.is_valid() and formset.is_valid():
+            forms = forms.save(commit=False)
+            forms.save()
+            formset.save()
+            return HttpResponseRedirect('/historicos/')
+
+    else:
+        forms = Form_tabela_historico(instance=historico_form, prefix='main')
+        formset = notas_order_formset(instance=historico_form, prefix='notas')
+
+    context = {
+        'forms': forms,
+        'formset': formset,
+    }
+    return render(request, 'historico.html', context)
+
+@login_required
+def add_historico(request):
+    context = {}
+    historico_form = HistoricoAluno()
+    notas_order_formset = inlineformset_factory(Disciplina,HistoricoAluno, form=historico_form, extra=1, can_delete=False, min_num=1, validate_min=True)
+
+    if request.method == 'POST':
+        forms = Form_tabela_historico(request.POST, request.FILES, instance=historico_form, prefix='main')
+        formset = item_order_formset(request.POST, request.FILES, instance=historico_form, prefix='notas')
+
+        if forms.is_valid() and formset.is_valid():
+            forms = forms.save(commit=False)
+            forms.save()
+            formset.save()
+            return HttpResponseRedirect('/historicos/')
+
+    else:
+        forms = Form_tabela_historico(instance=order_forms, prefix='main')
+        formset = notas_order_formset(instance=order_forms, prefix='notas')
+
+    context = {
+        'forms': forms,
+        'formset': formset,
+    }
+    return render(request, 'historico.html', context)
+
+
+
 
 @login_required
 def tabela_notas_historico(request):
@@ -139,26 +193,25 @@ def tabela_notas_historico(request):
         cod_aluno = request.GET.get('dropAluno')
 
         qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
-        'ano_turma','carga_hr','disciplinas__turma_disciplinas__disciplinas__cod_disciplina',
-        'disciplinas__turma_disciplinas__disciplinas__nome_disciplina')
+        'ano_turma','carga_hr')
         
         if HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno):
             tem_historico = True
         
-        for item in qsturmas.distinct("disciplinas__turma_disciplinas__disciplinas__cod_disciplina"):
-            disciplina_na_lista = False
+        # for item in qsturmas.distinct("disciplinas__turma_disciplinas__disciplinas__cod_disciplina"):
+        #     disciplina_na_lista = False
                        
-            # if qs_disciplina:
-            dict_disciplinas = {'cod_turma':item['cod_turma'],
-                    'cod_disciplina':item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'],
-                    'nome_disciplina':item['disciplinas__turma_disciplinas__disciplinas__nome_disciplina']}
+        #     # if qs_disciplina:
+        #     dict_disciplinas = {'cod_turma':item['cod_turma'],
+        #             'cod_disciplina':item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'],
+        #             'nome_disciplina':item['disciplinas__turma_disciplinas__disciplinas__nome_disciplina']}
         
-            for ls_disciplina_pronta in ls_disciplinas:
-                if item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'] == ls_disciplina_pronta['cod_disciplina']:
-                    disciplina_na_lista = True
+        #     for ls_disciplina_pronta in ls_disciplinas:
+        #         if item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'] == ls_disciplina_pronta['cod_disciplina']:
+        #             disciplina_na_lista = True
             
-            if not disciplina_na_lista:
-                ls_disciplinas.append(dict_disciplinas)
+        #     if not disciplina_na_lista:
+        #         ls_disciplinas.append(dict_disciplinas)
 
         for item in qsturmas.distinct('ano_turma'):
             dict_turmas = {}
@@ -421,7 +474,7 @@ def relatorio_pdf(request,cod_aluno):
                     ls_notas.append(None)
                 
             item.update({'notas':ls_notas})
-        print(data_hoje(),"data de hj")
+
         params =  {'dados_aluno':dados_aluno,
             'turmas': ls_turmas,
             'estudos_feitos':ls_estudos_feitos,
@@ -431,11 +484,11 @@ def relatorio_pdf(request,cod_aluno):
             'qnt_disciplinas':len(ls_disciplinas)+3,
             'data':data_hoje()}
 
-        # return RenderPdf.render('relatorios/historico_pdf.html', 
-        # params, 
-        # 'Histórico - '+dados_aluno['nome'], request)
-        return render(request, 'relatorios/historico_pdf.html',
-            params)
+        return RenderPdf.render('relatorios/historico_pdf.html', 
+        params, 
+        'Histórico - '+dados_aluno['nome'], request)
+        # return render(request, 'relatorios/historico_pdf.html',
+        #     params)
         
     else:
         return HttpResponse("nenhum aluno encontrato!")

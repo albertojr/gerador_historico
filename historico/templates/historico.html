@@ -1,5 +1,8 @@
 {%extends 'base.html'%}
 {% load static %}
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+
 {%block header%}
 <div class="col-sm-6">
     <h1>Alimentar Histórico</h1>
@@ -17,7 +20,7 @@
         <h5>Selecione um aluno</h5>
     </div>
     <div class="card-body">
-        <form method="POST" id="form_busca">
+        <form method="GET" id="form_busca" action="{% url 'add_historicos' %}">
             {% csrf_token %}
             <div class="row">
                 <label>Alunos:</label>
@@ -28,8 +31,7 @@
                 </div>
                 <div class="col-md-2">
                     <div class="col">
-                        <button class="btn btn-secondary " type="submit" id="btncriartabela"><i
-                                class="fas fa-search"></i></button>
+                        <button class="btn btn-secondary " type="submit"><i class="fas fa-search"></i></button>
                         <a class="btn btn-success" href="/admin/aluno/aluno/add/" target="_blank">
                             <i class="fas fa-user-plus"></i> Aluno</a>
                     </div>
@@ -53,6 +55,36 @@
                     <!-- inicio tabela -->
                     <div class="card">
                         <div class="card-body" id="table" style="height: 100%;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope=col class=text-center>Área de conhecimentos</th>
+                                        <th scope=col class=text-center>1º Ano</th>
+                                        <th scope=col class=text-center>2º Ano</th>
+                                        <th scope=col class=text-center>3º Ano</th>
+                                        <th scope=col class=text-center>4º Ano</th>
+                                        <th scope=col class=text-center>5º Ano</th>
+                                        <th scope=col class=text-center>6º Ano</th>
+                                        <th scope=col class=text-center>7º Ano</th>
+                                        <th scope=col class=text-center>8º Ano</th>
+                                        <th scope=col class=text-center>9º Ano</th>
+                                        <th scope=col class=text-center>AÇÃO</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                               
+
+                                <div id="order" class="form-inline form-group">
+                                    {% for item_order_form in formset %}
+                                        <div id="item-{{ forloop.counter0 }}">
+                                            {{ item_order_form.nota }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                   
+                            
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -79,6 +111,8 @@
 {% block scripts %}
 <link rel="stylesheet" href="{% static 'css/historico.css' %}?version=1.2">
 <script src="{% static 'js/historico.js' %}?version=1.2"></script>
+
+
 {% endblock %}
 
 {%endblock%}
@@ -103,3 +137,4 @@
     </a>
 </li>
 {%endblock%}
+

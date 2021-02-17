@@ -1,4 +1,4 @@
-$("#btn_salvar_notas").attr("disabled", true);
+// $("#btn_salvar_notas").attr("disabled", true);
 
 var json_geral;
 
@@ -11,162 +11,91 @@ const Toast = Swal.mixin({
 })
 
 //ao submeter/clicar em pesquisar form do diario-nota:
-$('#form_busca').on('submit', function (event) {//evento do form(filters)
-    // $("#btncriartabela").attr("disabled", true);
-    event.preventDefault();
-    buscar_dados_tabela()
+// $('#form_busca').on('submit', function (event) {//evento do form(filters)
+//     // $("#btncriartabela").attr("disabled", true);
+//     event.preventDefault();
+//     buscar_dados_tabela()
 
-});
+// });
 
 function buscar_dados_tabela() {
     //desabilitar os checks
-    $("#check_eja1").prop('checked', false);
-    $("#check_eja2").prop('checked', false);
-    $("#check_eja3").prop('checked', false);
-    $("#check_eja4").prop('checked', false);
+    // $("#check_eja1").prop('checked', false);
+    // $("#check_eja2").prop('checked', false);
+    // $("#check_eja3").prop('checked', false);
+    // $("#check_eja4").prop('checked', false);
 
-    $.ajax({
-        url: "tabela/notas", // url da view
-        type: "GET", // metodo HTTP
-        data: {
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-            dropAluno: $("#id_aluno").val(),
-        },
-        success: function (json) {
-            json_geral = json
-            $("#card_check").css("display", "block");
-            $("#btn_salvar_notas").attr("disabled", false);
-            $("#btn_gerar_pdf").removeClass('disabled');
+    // $.ajax({
+    //     url: "tabela/notas", // url da view
+    //     type: "GET", // metodo HTTP
+    //     data: {
+    //         csrfmiddlewaretoken: '{{ csrf_token }}',
+    //         dropAluno: $("#id_aluno").val(),
+    //     },
+    //     success: function (json) {
+    //         json_geral = json
+    //         $("#card_check").css("display", "block");
+    //         $("#btn_salvar_notas").attr("disabled", false);
+    //         $("#btn_gerar_pdf").removeClass('disabled');
 
-            if (json.historico == false) {
-                Swal.fire({
-                    title: 'Esse aluno não tem nenhum histórico! <br>Insira as notas na tabela e salve para criar um histórico!',
-                    text: 'Clique em ok para continuar',
-                    icon: 'info',
-                    confirmButtonText: 'ok'
-                })
-            }
+    //         if (json.historico == false) {
+    //             Swal.fire({
+    //                 title: 'Esse aluno não tem nenhum histórico! <br>Insira as notas na tabela e salve para criar um histórico!',
+    //                 text: 'Clique em ok para continuar',
+    //                 icon: 'info',
+    //                 confirmButtonText: 'ok'
+    //             })
+    //         }
 
-            montar_tabela(json);
-            montar_tabela_estudos(json);
+    //         montar_tabela(json);
+    //         montar_tabela_estudos(json);
 
-            $.each(json.ejas, function (i, val) {
-                if (val == "eja1") {
-                    $("#check_eja1").prop('checked', true);
-                }
+    //         $.each(json.ejas, function (i, val) {
+    //             if (val == "eja1") {
+    //                 $("#check_eja1").prop('checked', true);
+    //             }
 
-                if (val == 'eja2') {
-                    $("#check_eja2").prop('checked', true);
-                }
-                if (val == 'eja3') {
-                    $("#check_eja3").prop('checked', true);
-                }
-                if (val == 'eja4') {
-                    $("#check_eja4").prop('checked', true);
-                }
-                onchange_checkbox();
-            });
-
-        },
-
-    });
-
+    //             if (val == 'eja2') {
+    //                 $("#check_eja2").prop('checked', true);
+    //             }
+    //             if (val == 'eja3') {
+    //                 $("#check_eja3").prop('checked', true);
+    //             }
+    //             if (val == 'eja4') {
+    //                 $("#check_eja4").prop('checked', true);
+    //             }
+    //             onchange_checkbox();
+    //         });
+    //     },
+    // });
 }
 
 function montar_tabela(json) {
 
-    var tableHeaders = '';
-    var tbodyColunas = '';
-    //limpa a tabela
-    $('#notas').empty();
-    tableHeaders += "<th scope=col class=text-center>Área de Conhecimentos</th>"
+    // var tableHeaders = '';
+    // var tbodyColunas = '';
+    // //limpa a tabela
+    // $('#notas').empty();
+    // tableHeaders += "<th scope=col class=text-center>Área de Conhecimentos</th>"
 
-    $.each(json.turmas, function (i, val) {
-        tableHeaders += "<th scope=col class=text-center style=vertical-align:middle>" + val['ano_turma'] + "º Ano</th>";
-    });
+    // $.each(json.turmas, function (i, val) {
+    //     tableHeaders += "<th scope=col class=text-center style=vertical-align:middle>" + val['ano_turma'] + "º Ano</th>";
+    // });
 
-    $.each(json.disciplinas, function (i, disciplinas) {
-        tbodyColunas += '<tr class="text-center">';
-        tbodyColunas += '<td style="width:20px"><h5><span class="badge badge-secondary">' + disciplinas['nome_disciplina'] + '</h5></span></td>'
-        $.each(json.turmas, function (k, turmas) {
-            tbodyColunas += '<td style="width:130px"><div class="turma' + turmas['ano_turma'] + '"> <input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$" value="' + disciplinas['notas'][k] + '"></div></td>';
-        });
 
-        tbodyColunas += '</tr>';
-    })
+    // tbodyColunas += '<tr class="text-center">';
+    // tbodyColunas += '<td style="width:20px"><h5><span class="badge badge-secondary"></h5></span></td>'
+    // // $.each(json.turmas, function (k, turmas) {
+    // //     tbodyColunas += '<td style="width:130px"><div class="turma' + turmas['ano_turma'] + '"> <input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$" value="' + disciplinas['notas'][k] + '"></div></td>';
+    // // });
+
+    // tbodyColunas += '</tr>';
+
 
     //aqui add os header e as linhas a tabela(criando a tabela)
-    $("#notas").append('<table id="table-notas" class="table table-head-fixed table-hover"><thead class=table-active><tr>' + tableHeaders + '</tr></thead><tbody>' + tbodyColunas + '</tbody></table>');
+    // $("#notas").append('<table id="table-notas" class="table table-head-fixed table-hover"><thead class=table-active><tr>' + tableHeaders + '</tr></thead><tbody></tbody></table>');
 
     //transformando a tabela em um datatatble
-    var table = $("#table-notas").DataTable({
-        //seleciona as colunas para navegar com as setas
-        keys: {
-            columns: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        },
-        stateSave: true,
-        "dom": '<"toolbar">frtip',
-        "scrollY": "300px",
-        "scrollCollapse": true,
-        "paging": false,
-        "lengthChange": true,
-        "searching": false,
-        "ordering": false,
-        "info": false,
-        "autoWidth": false,
-        "responsive": true,
-        "destroy": true,
-        "language": {
-            "search": "Buscar: ",
-            "zeroRecords": "Nenhum registro encontrado",
-            "emptyTable": "Nennhum registro carregado",
-        },
-        //deixar celular navegaveis estilo excel
-    }).on('key-focus', function (e, datatable, cell, originalEvent) {
-        $('input', cell.node()).focus();
-    }).on("focus", "td input", function () {
-        $(this).select();
-    });;
-
-    $('.datatable tbody')
-        .on('mouseenter', 'td', function () {
-            var colIdx = table.cell(this).index().column;
-            $(table.cells().nodes()).removeClass('highlight');
-            $(table.column(colIdx).nodes()).addClass('highlight');
-        });
-
-    $("div.toolbar").html(
-        '<h6 class="card-title">Esse aluno é:</h6>' +
-        '<div class="row">' +
-        '<div class="form-group col-sm-1 ">' +
-        '<div class="form-check">' +
-        '<input class="form-check-input" type="checkbox" id="check_eja1"' +
-        'onchange="onchange_checkbox()">' +
-        '<label class="form-check-label">EJA1</label>' +
-        '</div>' +
-        '</div>' +
-        '<div class="form-group col-sm-1">' +
-        '<div class="form-check">' +
-        '<input class="form-check-input" type="checkbox" id="check_eja2"' +
-        'onchange="onchange_checkbox()">' +
-        '<label class="form-check-label">EJA2</label>' +
-        '</div>' +
-        '</div>' +
-        '<div class="form-group col-sm-1">' +
-        '<div class="form-check">' +
-        '<input class="form-check-input" type="checkbox" id="check_eja3"' +
-        'onchange="onchange_checkbox()">' +
-        '<label class="form-check-label">EJA3</label>' +
-        '</div>' +
-        '</div>' +
-        '<div class="form-group col-sm-1">' +
-        '<div class="form-check">' +
-        '<input class="form-check-input" type="checkbox" id="check_eja4"' +
-        'onchange="onchange_checkbox()">' +
-        '<label class="form-check-label">EJA4</label>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
 
 }
 
