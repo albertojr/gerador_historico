@@ -14,18 +14,9 @@ class DisciplinaSelect2(s2forms.Select2Widget):
         "nome_disciplina__icontains",
     ]
 
-class HistoricoForm(forms.Form):
+class BuscaHistoricoForm(forms.Form):
     alunos = forms.ModelChoiceField(
         queryset=Aluno.objects.all(),
-        widget=AlunoAutoComplete(
-            attrs={
-                'data-class': 'form-control select2bs4',
-                'data-id': 'drop-alunos',
-                'data-width': '100%',
-                'data-placeholder': 'Clique aqui',
-                'data-dropdown-css-class': 'select2-gray',
-            }
-        )
     )
 
     class Meta:
@@ -35,10 +26,9 @@ class HistoricoForm(forms.Form):
 class Form_tabela_historico(forms.ModelForm):
     disciplinas = forms.ModelChoiceField(
         queryset=Disciplina.objects.all().order_by('nome_disciplina'),
+        required=False,
     )
 
     class Meta:
         model = HistoricoAluno
-        fields = ('nota','disciplinas','aluno')
-
-    
+        fields = ('nota','disciplinas')

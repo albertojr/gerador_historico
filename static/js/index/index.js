@@ -69,6 +69,4 @@ $("#historicos_aluno tbody").on("click", "tr #btnPdf", function () {
     var cod_aluno = objTableHistoricos['aluno__cod_aluno'];
     url = "/historicos/relatorio/pdf/" + cod_aluno;
     window.location.href = url
-
-
 });

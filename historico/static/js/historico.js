@@ -1,5 +1,9 @@
 // $("#btn_salvar_notas").attr("disabled", true);
 
+$(document).ready(function () {
+    $('.select2bs4').select2();
+});
+
 var json_geral;
 
 const Toast = Swal.mixin({
@@ -9,6 +13,8 @@ const Toast = Swal.mixin({
     timer: 3000,
     timerProgressBar: true,
 })
+
+
 
 //ao submeter/clicar em pesquisar form do diario-nota:
 // $('#form_busca').on('submit', function (event) {//evento do form(filters)
@@ -197,12 +203,12 @@ function onchange_checkbox() {
     var checked_eja4 = $("#check_eja4").is(":checked");//eja4
 
     if (checked_eja1 == true) {
-        $(".turma1 .form-control").prop('disabled', true)
-        $(".turma2 .form-control").prop('disabled', true)
+        $("#item-0 .form-control").prop('disabled', true)
+        $("#item-1 .form-control").prop('disabled', true)
     }
     else {
-        $(".turma1 .form-control").prop('disabled', false)
-        $(".turma2 .form-control").prop('disabled', false)
+        $("#item-0 .form-control").prop('disabled', false)
+        $("#item-1 .form-control").prop('disabled', false)
     }
 
     if (checked_eja2 == true) {
@@ -228,6 +234,24 @@ function onchange_checkbox() {
     }
 
 }
+function add_row_table() {
+    //criando linha
+    var tbody_table = document.getElementById("row_notas");
+    var create_row = document.createElement('tr');
+    var count = (document.getElementsByTagName("tr").length) - 1
+    //terminou de criar linha
+
+    //seta um id no tr novo
+    create_row.setAttribute('id', count);
+    //pega a linha nova criada
+    var tmplMarkup = $("#disciplina-notas").html();
+    var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+    create_row.innerHTML = compiledTmpl
+    tbody_table.appendChild(create_row);
+
+    $(".select2bs4").select2();
+
+};
 
 function get_notas_tabela() {
     var arrayNovasNotas = [];
@@ -236,6 +260,7 @@ function get_notas_tabela() {
     var checked_eja2 = $("#check_eja2").is(":checked");//eja2
     var checked_eja3 = $("#check_eja3").is(":checked");//eja3
     var checked_eja4 = $("#check_eja4").is(":checked");//eja4
+    var cont_id_td = 1;
 
     $("#table-notas tbody tr").each(function (item) {
         var linhaAtual = $(this);
@@ -244,17 +269,25 @@ function get_notas_tabela() {
         var lista_nome_turma = []
         var i = 1;
 
-        nome_disciplina = linhaAtual.find("td:eq(0)").text();
-
-        linhaAtual.find("td div").each(function (params) {
+        linhaAtual.find("td").each(function (params) {
             notas = linhaAtual.find("td:eq(" + i + ") input[type='number']").val()
-            if (notas != undefined) {
+            if (notas != '' || notas != "" || notas != undefined) {
                 lista_notas.push(notas)
                 lista_nome_turma.push(i)
             }
             i++;
+            if (i == 10) {
+                return false;
+            }
         })
-        obj_notas.cod_aluno = $("#id_aluno").val()
+        if (item == 0) {
+            obj_notas.cod_disciplina = linhaAtual.find("td:eq(0) #id_form-0-disciplinas").val() || linhaAtual.find("td:eq(0) #id_disciplinas").val();
+        }
+        else {
+            obj_notas.cod_disciplina = linhaAtual.find("td:eq(0) #id_form-" + item + "-disciplinas").val() || linhaAtual.find("td:eq(0) #id_disciplinas").val();
+            cont_id_td++;
+        }
+        obj_notas.cod_aluno = $("#id_alunos").val()
         obj_notas.notas = lista_notas
         obj_notas.nomes_turma = lista_nome_turma
         obj_notas.eja1 = checked_eja1
@@ -262,15 +295,11 @@ function get_notas_tabela() {
         obj_notas.eja3 = checked_eja3
         obj_notas.eja4 = checked_eja4
 
-        json_geral.disciplinas.forEach(element => {
-            if (nome_disciplina == element['nome_disciplina']) {
-                obj_notas.nome_disciplina = nome_disciplina
-                obj_notas.cod_disciplina = element['cod_disciplina']
-            }
-        });
-        arrayNovasNotas.push(obj_notas);
+        if (obj_notas.cod_disciplina != undefined) {
+            arrayNovasNotas.push(obj_notas);
+        }
     });
-
+    console.log(arrayNovasNotas)
     return arrayNovasNotas
 }
 
@@ -314,9 +343,9 @@ function get_dados_tabela_estudos() {
 $('#form_table_notas').on('submit', function (event) {
     // $("#btn_salvar_notas").attr("disabled", true);
     event.preventDefault();
-    novasNotas = get_notas_tabela(json_geral)
+    novasNotas = get_notas_tabela()
     dadosTabelaEstudos = get_dados_tabela_estudos()
-    $("#btn_salvar_notas").attr("disabled", true);
+    // $("#btn_salvar_notas").attr("disabled", true);
 
 
     $.ajax({
@@ -328,33 +357,31 @@ $('#form_table_notas').on('submit', function (event) {
         dataType: 'json',
         success: function (data) {
             toastr.success('Notas Salvas com Sucesso!')
-            buscar_dados_tabela()
+            // buscar_dados_tabela()
 
-            $.ajax({
-                headers: { "X-CSRFToken": $.cookie("csrftoken") },
-                type: "POST",
-                contentType: "application/json",
-                url: "tabela/estudos",
-                data: JSON.stringify(dadosTabelaEstudos), // convert array to JSON
-                dataType: 'json',
+            // $.ajax({
+            //     headers: { "X-CSRFToken": $.cookie("csrftoken") },
+            //     type: "POST",
+            //     contentType: "application/json",
+            //     url: "tabela/estudos",
+            //     data: JSON.stringify(dadosTabelaEstudos), // convert array to JSON
+            //     dataType: 'json',
 
-                success: function (data) {
+            //     success: function (data) {
+            //         toastr.success('Dados de estudos salvos com sucesso!')
+            //         $("#btn_salvar_notas").attr("disabled", false);
+            //         buscar_dados_tabela()
+            //     },
 
-                    toastr.success('Dados de estudos salvos com sucesso!')
-
-                    $("#btn_salvar_notas").attr("disabled", false);
-                    buscar_dados_tabela()
-                },
-
-                error: function (data) {
-                    Swal.fire({
-                        title: "" + data.responseJSON.error + "",
-                        text: 'Clique em ok para continuar',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    })
-                },
-            })
+            //     error: function (data) {
+            //         Swal.fire({
+            //             title: "" + data.error + "",
+            //             text: 'Clique em ok para continuar',
+            //             icon: 'error',
+            //             confirmButtonText: 'Ok'
+            //         })
+            //     },
+            // })
         },
         error: function (data) {
             Swal.fire({

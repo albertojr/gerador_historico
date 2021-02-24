@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'widget_tweaks',
     'crispy_forms',
-    'django_select2',
+    # 'django_select2',
     'aluno',
     'historico'
 ]
