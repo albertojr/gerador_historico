@@ -1,0 +1,50 @@
+<div class="card">
+    <div class="card-header">
+        <h6 class="card-title text-bold">OFERTA ANUAL</h6>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>  
+                    {% for turma in turmas %}
+                        <th scope=col class="text-center">{{turma.ano_turma}}º Ano</th>    
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if oferta_anual %}
+                    <tr class="text-center">
+                        {% for turma in oferta_anual %}
+                            <td>
+                                {% if turma.ch_anual %}
+                                    <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="{{turma.ch_anual}}"></div>
+                                {% else %}  
+                                    <input class="form-control is-warning form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="{{turma.ch_anual}}"></div>
+                                {% endif %}
+                            </td>                     
+                        {% endfor %}
+                     </tr>
+                {% else %}      
+                    <tr class="text-center">
+                        {% for turma in turmas  %}                                           
+                            <td>
+                                {% if turma.ano_turma < '4' %}
+                                    <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="800"></div>
+
+                                {%else %}
+                                    {%if turma.ano_turma > '3' and turma.ano_turma < '8' %}
+                                        <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="880"></div>
+                                    
+                                    {% else %}
+                                        <input class="form-control is-warning form-control-sm text-center " type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$"></div>
+                                    {% endif %} 
+                                        
+                                {% endif %}         
+                            </td>                                           
+                        {% endfor %}
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="card">
+    <div class="card-body" id="table2" style="height: 100%;">
+        {% if estudos_feitos %}
+            <table class="table" id="table-estudos">
+                <thead>
+                    <tr>
+                        <th scope=col class=text-center>ANO</th>
+                        <th scope=col class=text-center>ANO LETIVO</th>
+                        <th scope=col class=text-center>ESTABELECIMENTO DE ENSINO</th>
+                        <th scope=col class=text-center>MUNÍCIPIO</th>
+                        <th scope=col class=text-center>UF</th>
+                        <th scope=col class=text-center>RESULTADO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hs_estudos in estudos_feitos  %}
+                        <tr class="text-center">
+                            <td ><h4><span class="badge badge-secondary">{{hs_estudos.ano_turma}}º Ano</span></h4></td>
+                            <td ><input class="form-control form-control-sm text-center" type="number" placeholder="Digite" pattern="[0-9]+$" value="{{hs_estudos.ano_letivo}}"></td>
+                            <td ><input class="form-control form-control-sm text-center" type="text" placeholder="Digite" value="{{hs_estudos.escola}}"></td>
+                            <td ><input class="form-control form-control-sm text-center" type="text" placeholder="Digite" value="{{hs_estudos.municipio}}"></td>
+                            <td ><input class="form-control form-control-sm text-center" type="text" placeholder="Digite" maxlength="2"  value="{{hs_estudos.uf}}"></td>
+
+                            {% if hs_estudos.resultado == "APROVADO(A)" %}
+                                <td style="width:15px">
+                                    <select class="form-control" id="sel1">
+                                    <option>Selecione...</option>
+                                    <option selected>APROVADO</option>
+                                    <option>REPROVADO</option>
+                                    </select>
+                                </td>
+                            {%elif hs_estudos.resultado == "REPROVADO(A)"%}
+                                <td style="width:15px">
+                                    <select class="form-control" id="sel1">
+                                    <option>Selecione...</option>
+                                    <option selected>APROVADO</option>
+                                    <option>REPROVADO</option>
+                                    </select>
+                                </td>
+                            {%else%}
+                                    <td style="width:15px">
+                                    <select class="form-control" id="sel1">
+                                    <option selected>Selecione...</option>
+                                    <option >APROVADO</option>
+                                    <option>REPROVADO</option>
+                                    </select>
+                                </td>
+                            {% endif %} 
+                        </tr>     
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>

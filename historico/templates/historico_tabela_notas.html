@@ -1,0 +1,117 @@
+{% load widget_tweaks %}
+{% load crispy_forms_tags %}
+<div class="card">
+    <div class="card-body" id="table" style="height: 100%;">
+        <h6 class="card-title">Esse aluno é:</h6>
+        <div class="row">
+                <div class="form-group col-sm-1">
+                    <div class="form-check">
+                        {% if eja1 %}
+                            <input class="form-check-input" type="checkbox" id="check_eja1"
+                                onchange="onchange_checkbox()" checked>
+                        {%else%}
+                            <input class="form-check-input" type="checkbox" id="check_eja1"
+                                onchange="onchange_checkbox()" >
+                        {% endif %}
+                        <label class="form-check-label">EJA1</label>
+                    </div>
+                </div>
+                <div class="form-group col-sm-1">
+                    <div class="form-check">
+    
+                        {% if eja2 %}
+                            <input checked class="form-check-input" type="checkbox" id="check_eja2"
+                        onchange="onchange_checkbox()">
+
+                        {%else%}
+                            <input class="form-check-input" type="checkbox" id="check_eja2"
+                            onchange="onchange_checkbox()">
+                        {% endif %}      
+                        <label class="form-check-label">EJA2</label>
+                    </div>
+                </div>
+                <div class="form-group col-sm-1">
+                    <div class="form-check">
+                    {% if eja3 %}
+                        <input checked class="form-check-input" type="checkbox" id="check_eja3"
+                        onchange="onchange_checkbox()">
+                    {%else%}
+                        <input class="form-check-input" type="checkbox" id="check_eja3"
+                        onchange="onchange_checkbox()">
+                    {% endif %}
+                    <label class="form-check-label">EJA3</label>
+                </div>
+            </div> 
+                <div class="form-group col-sm-1"> 
+                    <div class="form-check">
+                        {% if eja4 %}
+                        <input checked class="form-check-input" type="checkbox" id="check_eja4" onchange="onchange_checkbox()"> 
+                        
+                        {%else%}
+                            <input class="form-check-input" type="checkbox" id="check_eja4" onchange="onchange_checkbox()"> 
+
+                        {% endif %}
+                            
+                        <label class="form-check-label">EJA4</label> 
+                    </div> 
+                </div> 
+            </div>
+        
+            <table class="table" id="table-notas">
+                <thead>
+                    <tr>
+                        <th scope=col class=text-center>Área de conhecimentos</th>
+                        <th scope=col class=text-center>1º Ano</th>
+                        <th scope=col class=text-center>2º Ano</th>
+                        <th scope=col class=text-center>3º Ano</th>
+                        <th scope=col class=text-center>4º Ano</th>
+                        <th scope=col class=text-center>5º Ano</th>
+                        <th scope=col class=text-center>6º Ano</th>
+                        <th scope=col class=text-center>7º Ano</th>
+                        <th scope=col class=text-center>8º Ano</th>
+                        <th scope=col class=text-center>9º Ano</th>
+                        <th scope=col class=text-center>AÇÃO</th>
+                    </tr>
+                </thead>
+                <tbody id="row_notas">
+                    {% for form_disciplina in form_set  %}
+                        <tr>
+                            <td style="width:50px">
+                                {% render_field form_disciplina.disciplinas style="width:145px" class="form-group select2bs4"  %}
+                            </td>
+                            
+                            {% if historicos %}
+                                {% for disciplina in historicos %} 
+                                    {% if form_disciplina.disciplinas.value == disciplina.cod_disciplina_hs %}
+                                        {% for nota in disciplina.notas %}                                                    
+                                            {% if nota != None %}
+                                                <td><input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$" value="{{nota}}"></div></td>
+
+                                            {%else%}
+                                                <td><input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$"></div></td>
+
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}                                                                                                                                                                          
+                                {% endfor %}
+
+                            {%else%}
+                                {% for i in turmas %}
+                                    <td><input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$"></div></td>
+                                {% endfor %}
+                            {%endif%}
+                            <td>
+                                <button class="btn btn-success" type="button" onclick="add_row_table()"><i class="fas fa-plus-circle"></i></button>    
+                            </td>   
+                        </tr> 
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            {% if not forms %}
+                <p>
+                    <h6 class="text-center"><b>Selecione um aluno acima!</b><h6>
+                </p>
+            {% endif %}
+    </div>
+</div>

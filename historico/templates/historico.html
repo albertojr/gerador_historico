@@ -1,4 +1,5 @@
 {%extends 'base.html'%}
+
 {% load static %}
 {% load widget_tweaks %}
 {% load crispy_forms_tags %}
@@ -11,7 +12,7 @@
         </a>
     </li>
     <li class="nav-item">
-        <a href="{% url 'historico' %}" class="nav-link active">
+        <a href="{% url 'add_historicos' %}" class="nav-link active">
             <i class="far fa-circle nav-icon"></i>
             <p>Criar histórico</p>
         </a>
@@ -41,7 +42,7 @@
         <h5>Selecione um aluno</h5>
     </div>
     <div class="card-body">
-        <form method="GET" id="form_busca" action="{% url 'add_historicos' %}">
+        <form method="POST" id="form_busca" action="{% url 'add_historicos' %}">
             {% csrf_token %}
             <div class="row">
                 <label>Alunos:</label>
@@ -64,146 +65,24 @@
 <div class="card">
     <div class="card-header p-2">
         <ul class="nav nav-pills">
-            <li class="nav-item"><a class="nav-link active" href="#notas" data-toggle="tab">Lançar Notas</a></li>
-            <li class="nav-item"><a class="nav-link" href="#estudos" data-toggle="tab">Lançar Estudos</a></li>
+            <li class="nav-item"><a class="nav-link active" href="#notas" data-toggle="tab">Tabela Notas</a></li>
+            <li class="nav-item"><a class="nav-link" href="#oferta_anual" data-toggle="tab">Oferta Anual</a></li>
+            <li class="nav-item"><a class="nav-link" href="#estudos" data-toggle="tab">Historico Estudos</a></li>
+
         </ul>
     </div><!-- /.card-header -->
-    <form method="POST" id="form_table_notas" action="{% url 'add_historicos' %}">
+    <form method="POST" id="form_table_notas" action="{% url 'add_historicos' %}">                             
         <div class="card-body">
             <div class="tab-content" id="pills-tabContent">
                 {% csrf_token %}
                 <div class="tab-pane active" id="notas">
-                    <!-- inicio tabela -->
-                    <div class="card">
-                        <div class="card-body" id="table" style="height: 100%;">
-                            {% if historicos %}
-                                <h6 class="card-title">Esse aluno é:</h6>
-                                <div class="row">
-                                    <div class="form-group col-sm-1">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="check_eja1"
-                                            onchange="onchange_checkbox()">
-                                            <label class="form-check-label">EJA1</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-sm-1">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="check_eja2"
-                                            onchange="onchange_checkbox()">
-                                            <label class="form-check-label">EJA2</label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-sm-1">
-                                        <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="check_eja3"
-                                        onchange="onchange_checkbox()">
-                                        <label class="form-check-label">EJA3</label>
-                                    </div>
-                                </div> 
-                                    <div class="form-group col-sm-1"> 
-                                        <div class="form-check"> 
-                                            <input class="form-check-input" type="checkbox" id="check_eja4" onchange="onchange_checkbox()"> 
-                                            <label class="form-check-label">EJA4</label> 
-                                        </div> 
-                                    </div> 
-                                </div>
-                                <table class="table" id="table-notas">
-                                    <thead>
-                                        <tr>
-                                            <th scope=col class=text-center>Área de conhecimentos</th>
-                                            <th scope=col class=text-center>1º Ano</th>
-                                            <th scope=col class=text-center>2º Ano</th>
-                                            <th scope=col class=text-center>3º Ano</th>
-                                            <th scope=col class=text-center>4º Ano</th>
-                                            <th scope=col class=text-center>5º Ano</th>
-                                            <th scope=col class=text-center>6º Ano</th>
-                                            <th scope=col class=text-center>7º Ano</th>
-                                            <th scope=col class=text-center>8º Ano</th>
-                                            <th scope=col class=text-center>9º Ano</th>
-                                            <th scope=col class=text-center>AÇÃO</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="row_notas">
-                                        {% for form_disciplina in form_set  %}
-                                            <tr>
-                                                <td style="width:50px">
-                                                    {% render_field form_disciplina.disciplinas style="width:145px" class="form-group select2bs4"  %}
-                                                </td>
-
-                                                {% for disciplina in historicos %} 
-                                                {{ form_disciplina.cod_disciplina.value}}
-                                                    {% if form_disciplina.disciplinas.value == disciplina.cod_disciplina_hs %}
-                                                        {% for nota in disciplina.notas %}
-                                                                                                                       
-                                                            {% if nota != None %}
-                                                                <td><input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$" value="{{nota}}"></div></td>
-
-                                                            {%else%}
-                                                                <td><input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$"></div></td>
-   
-                                                            {% endif %}
-                                                                
-                                                                
-                                                        {% endfor %}
-                                                    {% endif %}                                                                                                                                   
-                                                {% endfor %}
-                                                <td>
-                                                    <button class="btn btn-success" type="button" onclick="add_row_table()"><i class="fas fa-plus-circle"></i></button>    
-                                                </td>   
-                                            </tr> 
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            {% else %}
-                                {% if forms %}
-                                    <table class="table" id="table-notas">
-                                        <thead>
-                                            <tr>
-                                                <th scope=col class=text-center>Área de conhecimentos</th>
-                                                <th scope=col class=text-center>1º Ano</th>
-                                                <th scope=col class=text-center>2º Ano</th>
-                                                <th scope=col class=text-center>3º Ano</th>
-                                                <th scope=col class=text-center>4º Ano</th>
-                                                <th scope=col class=text-center>5º Ano</th>
-                                                <th scope=col class=text-center>6º Ano</th>
-                                                <th scope=col class=text-center>7º Ano</th>
-                                                <th scope=col class=text-center>8º Ano</th>
-                                                <th scope=col class=text-center>9º Ano</th>
-                                                <th scope=col class=text-center>AÇÃO</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="row_notas">
-                                            <tr>
-                                            {% for form_disciplina in form_set  %}
-                                                <td style="width:50px">
-                                                    {% render_field form_disciplina.disciplinas style="width:145px" class="form-group select2bs4"  %}
-                                                </td>
-                                            {%endfor%}
-                                        
-                                                {% for i in range %}
-                                                    <td><input class="form-control form-control-sm text-center" type="number" onwheel="this.blur()" step="0.01" min="0.00" max="10.00" placeholder="Digite" pattern="[0-9]+$"></div></td>
-                                                {% endfor %}
-
-                                                <td>
-                                                    <button class="btn btn-success" type="button" onclick="add_row_table()"><i class="fas fa-plus-circle"></i></button>    
-                                                </td>  
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    {%else%}
-
-                                        <h6 class="text-center"><b>Selecione um aluno acima!</b><h6>
-
-                                    {%endif%}
-                                {%endif%}
-                        </div>
-                    </div>
+                    {% include 'historico_tabela_notas.html' %}
                 </div>
                 <div class="tab-pane" id="estudos">
-                    <div class="card">
-                        <div class="card-body" id="table2" style="height: 100%;">
-                        </div>
-                    </div>
+                    {% include 'historico_estudos.html'%}
+                </div>
+                <div class="tab-pane" id="oferta_anual">
+                    {% include 'historico_oferta_anual.html' %}
                 </div>
             </div>
             <div class="row" style="margin-top: 20px;">
@@ -226,7 +105,7 @@
     <td style="width:50px">
         {% render_field forms.disciplinas style="width:145px" class="form-group select2bs4" id="id_form-__prefix__-disciplinas" %}
      </td>
-        {% for i in range  %}
+        {% for qnt_turmas in turmas  %}
             <td style="width:300px">
                 <div id="item-{{ forloop.counter0 }}" class="input-group mb-1">
                     {% render_field forms.nota class="form-control" placeholder="Digite" %}

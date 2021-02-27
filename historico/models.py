@@ -32,9 +32,10 @@ class Disciplina(models.Model):
     nome_disciplina = models.CharField(verbose_name='Nome', max_length=300, unique=True)
     tipo_disciplina = models.CharField(verbose_name='Tipo de Disciplina',
                                        max_length=30, choices=tp_disciplina)
+    historico_base = models.BooleanField(default=False)
 
     def __str__(self):
-        return '{}'.format(self.nome_disciplina)
+        return '{} - Base: {}'.format(self.nome_disciplina,self.historico_base)
 
     class Meta:
         managed = True
@@ -44,14 +45,14 @@ class Disciplina(models.Model):
 class Turma(models.Model):
     cod_turma = models.AutoField(primary_key=True)
     ano_turma = models.CharField(verbose_name="Ano", max_length=6, choices=anos_choice)
-    carga_hr = models.IntegerField(verbose_name="Oferta Anual",blank=True,null=True)
     status_turma = models.BooleanField(default=True,verbose_name="Status da turma")
-
-  
 
     class Meta:
         managed = True
         db_table = 'turma'
+    
+    def __str__(self):
+        return '{} - {}º Ano'.format(self.cod_turma,self.ano_turma)
 
 class HistoricoAluno(models.Model):
     cod_historico = models.AutoField(primary_key=True)
@@ -83,6 +84,23 @@ class EstudosHistorico(models.Model):
     class Meta:
         managed = True
         db_table = 'estudos_historico'
+
+class OfertaAnual(models.Model):
+    cod_oferta_anual = models.AutoField(primary_key=True)
+    historico_aluno = models.ForeignKey('HistoricoAluno',verbose_name="Aluno",on_delete=models.CASCADE)
+    turma_ch_anual = models.ForeignKey('Turma',verbose_name="Turma",on_delete=models.CASCADE)
+    ch_hr_anual = models.IntegerField(verbose_name="Carga Horaria")
+
+    class Meta:
+        managed = True
+        db_table = 'oferta_anual'
+
+    def __str__ (self):
+        return 'cod.{} | {} | {}º Ano | C.H {}'.format(self.cod_oferta_anual,
+        self.historico_aluno.aluno.nome_aluno,
+        self.historico_aluno.turma_historico.ano_turma,
+        self.ch_hr_anual)
+
 
 
 

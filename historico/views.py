@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.contrib.auth.decorators import login_required
-from historico.models import HistoricoAluno,Turma,Disciplina,EstudosHistorico
+from historico.models import HistoricoAluno,Turma,Disciplina,EstudosHistorico,OfertaAnual
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime,date
@@ -34,110 +34,150 @@ def historicos_json(request):
     return HttpResponse(historicos_json)
 
 @login_required
-def historico(request):
-    context = {}
-    busca_historico_form = BuscaHistoricoForm()
-
-    context = {
-        'form_busca_aluno': busca_historico_form,
-    }
-    
-    return render(request, 'historico.html', context)
-
-@login_required
 def add_form_line_historico(request):
     context = {}
-    cod_aluno = request.GET.get('alunos')
+    cod_aluno = request.POST.get('alunos')
 
-    qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno)
+    qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno).values(
+        "disciplina_historico","nota","tipo_eja")
+    
+    qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
+            'ano_turma').order_by("ano_turma")
     
     forms = Form_tabela_historico()
-      
-    if request.method == 'GET':
-               
+
+    #aqui permite criar vários forms do mesmo jeito
+    disciplinas_form_set = formset_factory(Form_tabela_historico,extra=0)
+
+    ls_disciplinas = list()
+
+    if request.method == 'POST': 
+        ls_estudos_feitos = list()
+        ls_ch_anual = list()
+        #valores da tabela estudos e oferta anual     
+        for turmas in qsturmas.distinct('ano_turma'):
+            dict_estudos = {'ano_turma':turmas['ano_turma'],'ano_letivo':'','escola':'',
+            'municipio':'','uf':'','resultado':''}
+            
+            #verifica se tem algo na tabela de estudos
+            qs_estudos = EstudosHistorico.objects.filter(historico_estudo__aluno__cod_aluno=cod_aluno,
+            ano_turma_estudo__ano_turma=turmas['ano_turma'])
+
+            for estudos in qs_estudos:
+                if  estudos.ano_letivo_estudo:
+                    dict_estudos['ano_letivo'] = estudos.ano_letivo_estudo.year
+                dict_estudos['escola'] = estudos.escola_ensino_estudo
+                dict_estudos['municipio'] = estudos.municipio_estudo
+                dict_estudos['uf'] = estudos.estado_estudo
+                dict_estudos['resultado'] = estudos.resultado_estudo
+            ls_estudos_feitos.append(dict_estudos)
+            
+            #montando oferta anual
+            dict_oferta_anual = {'ano_turma':turmas['ano_turma'],'ch_anual':''}
+
+            oferta_anual = OfertaAnual.objects.filter(
+            historico_aluno__aluno__cod_aluno=cod_aluno,
+            historico_aluno__turma_historico__ano_turma=turmas['ano_turma']).distinct(
+                "historico_aluno__turma_historico__ano_turma")
+            
+            for ch_anual in oferta_anual:
+                dict_oferta_anual['ch_anual'] = ch_anual.ch_hr_anual
+            
+            ls_ch_anual.append(dict_oferta_anual)
+        #fim dos valores estudos
+
         if qs_historicos:
             ls_turmas = list()
-            ls_disciplinas = list()
-            ls_ejas = list()
-            ls_estudos_feitos = list()
-            tem_historico = False
-
-            #aqui permite criar vários forms do mesmo jeito
-            disciplinas_form_set = formset_factory(Form_tabela_historico,extra=0)
-
-            qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
-            'ano_turma','carga_hr')
-            
-            if HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno):
-                tem_historico = True
-            
-            for item in qsturmas.distinct('ano_turma'):
-                dict_estudos = {'ano_turma':item['ano_turma'],'ano_letivo':'','escola':'',
-                'municipio':'','uf':'','resultado':''}
-                
-                #verifica se tem algo na tabela de estudos
-                qs_estudos = EstudosHistorico.objects.filter(historico_estudo__aluno__cod_aluno=cod_aluno,
-                ano_turma_estudo__ano_turma=item['ano_turma']).values('ano_turma_estudo__ano_turma','escola_ensino_estudo',
-                'municipio_estudo','estado_estudo','resultado_estudo','ano_letivo_estudo')
-
-                if qs_estudos:
-                    for estudos in qs_estudos:
-                        if not estudos['ano_letivo_estudo']:
-                            dict_estudos['ano_letivo'] = ""
-                        else:
-                            dict_estudos['ano_letivo'] = estudos['ano_letivo_estudo'].strftime("%Y")
-                        dict_estudos['escola'] = estudos['escola_ensino_estudo']
-                        dict_estudos['municipio'] = estudos['municipio_estudo']
-                        dict_estudos['uf'] = estudos['estado_estudo']
-                        dict_estudos['resultado'] = estudos['resultado_estudo']
-                ls_estudos_feitos.append(dict_estudos)
-
-            qs_historicos = qs_historicos.values("disciplina_historico","nota")
-          
-            
             historico_disciplina = list()
-            
-            for qs_disciplinas in qs_historicos.distinct("disciplina_historico"):
+
+            #valores do eja:
+            eja1=False
+            eja2=False
+            eja3=False
+            eja4=False
+           
+            for ejas in qs_historicos:
+                if ejas['tipo_eja'] != None and ejas['tipo_eja']:
+                    if ejas['tipo_eja'] == 'eja1':
+                        eja1=True
+                    elif ejas['tipo_eja'] == 'eja2':
+                        eja2 = True
+                    elif ejas['tipo_eja'] == 'eja3':
+                        eja3=True
+                    elif ejas['tipo_eja'] == 'eja4':
+                        eja4 = True
+
+            #add notas em cada disciplina          
+            for qs_disciplinas in Disciplina.objects.all().distinct("cod_disciplina","nome_disciplina").values():
                 lista_notas=list()
-                #criando uma lista para poder inicializar o select2
-                ls_disciplinas.append({'disciplinas':qs_disciplinas['disciplina_historico']})
                 
-                notas_por_disciplina = qs_historicos.filter(disciplina_historico=qs_disciplinas["disciplina_historico"])
+                hs_notas_por_disciplina = qs_historicos.filter(
+                    disciplina_historico=qs_disciplinas['cod_disciplina'])
                 
-                for ano_turma in range(1,10):
-                    notas_por_turma = notas_por_disciplina.filter(turma_historico__ano_turma = ano_turma)
+                #se essa disciplina tiver no histórico
+                if hs_notas_por_disciplina:
+                    #add a lista para inicializar no form
+                    ls_disciplinas.append({'disciplinas':qs_disciplinas['cod_disciplina']})
+
+                    for ano_turma in range(1,10):
+                        notas_por_turma = hs_notas_por_disciplina.filter(turma_historico__ano_turma = ano_turma)
+                        
+                        if notas_por_turma:
+                            lista_notas.append(str(notas_por_turma[0]["nota"]))
+
+                        else:
+                            lista_notas.append(None)
                     
-                    if notas_por_turma:
-                        lista_notas.append(str(notas_por_turma[0]["nota"]))
-
-                    else:
-                        lista_notas.append(None)
-                
-                historico_disciplina.append({"cod_disciplina_hs":qs_disciplinas["disciplina_historico"],
-                "notas":lista_notas})
-
+                    historico_disciplina.append({"cod_disciplina_hs":qs_disciplinas['cod_disciplina'],
+                    "notas":lista_notas})
+                # se não tiver no historico, add a lista apenas se for base
+                else:
+                    disciplina_base = Disciplina.objects.filter(
+                        cod_disciplina=qs_disciplinas['cod_disciplina'],historico_base=True).distinct("cod_disciplina","nome_disciplina")
+                    if disciplina_base:
+                        historico_disciplina.append({"cod_disciplina_hs":qs_disciplinas['cod_disciplina'],
+                        "notas":[None,None,None,None,None,None,None,None,None]})
+                        #add a lista para inicializar no form
+                        ls_disciplinas.append({'disciplinas':qs_disciplinas['cod_disciplina']})
+            
+            #fim do add nota as disciplinas
             context = {
             'form_busca_aluno': BuscaHistoricoForm(initial={'alunos':cod_aluno}),
             'forms': forms,
-            'range':range(9),
-            'ejas':ls_ejas,'historico':tem_historico,
             'estudos_feitos':ls_estudos_feitos,
             'historicos':historico_disciplina,
             'form_set':disciplinas_form_set(initial=ls_disciplinas),
+            'eja1':eja1,
+            'eja2':eja2,
+            'eja3':eja3,
+            'eja4':eja4,
+            'turmas':qsturmas,
+            'oferta_anual':ls_ch_anual
              } 
             return render(request, 'historico.html', context)
             
-        #aqui permite criar vários forms do mesmo jeito
-        disciplinas_form_set = formset_factory(Form_tabela_historico,extra=1)
+        #pega as disciplinas para inicializar no select2
+        #aqui, pega apenas as disciplinas base para inicializar a tabela
+        for disciplina in Disciplina.objects.filter(historico_base=True).distinct("cod_disciplina","nome_disciplina"):
+            ls_disciplinas.append({'disciplinas':disciplina.cod_disciplina})
+       
         context = {
             'form_busca_aluno': BuscaHistoricoForm(initial={'alunos':cod_aluno}),
-            'form_set': disciplinas_form_set(),
+            'form_set': disciplinas_form_set(initial=ls_disciplinas),
             'forms':forms,
             'range':range(9),
+            'turmas':qsturmas,
+            'estudos_feitos':ls_estudos_feitos,
         }
+        return render(request, 'historico.html', context)
     
-    return render(request, 'historico.html', context)
+    else:
+        context = {
+            'form_busca_aluno': BuscaHistoricoForm(initial={'alunos':cod_aluno}),
+            'turmas':qsturmas,
 
+        }
+        return render(request, 'historico.html', context)
 
 @login_required
 def tabela_notas_historico(request):
@@ -213,7 +253,9 @@ def tabela_notas_historico(request):
                             if item['eja2'] == True:
                                 if item['nomes_turma'][i] == 4:
                                     obj_historico.tipo_eja = 'eja2'
-                                    obj_historico.save()                        
+                                    obj_historico.save()
+                                # else:
+                                #     obj_historico.save()                        
                             
                             if item['eja3'] == True:
                                 if item['nomes_turma'][i] == 6:
@@ -294,36 +336,36 @@ def tabela_notas_historico(request):
         'estudos_feitos':ls_estudos_feitos}
         return JsonResponse(data)
 
-def atualizar_notas(qsHistoricoNota,item,i):
+def atualizar_notas(qsHistoricoNota,data_front,i):
     obj_historico = HistoricoAluno.objects.get(
         cod_historico=qsHistoricoNota[0]['cod_historico'])
 
-    if item['notas'][i] != "":
+    if data_front['notas'][i] != "":
         try:
-            obj_historico.nota = float(item['notas'][i])
+            obj_historico.nota = float(data_front['notas'][i])
             obj_historico.tipo_eja = None
 
-            if item['eja1'] == True:
-                if item['nomes_turma'][i] == 1 or item['nomes_turma'][i] == 2 or item['nomes_turma'][i] == 3:
-                    if item['nomes_turma'][i] == 1 or item['nomes_turma'][i] == 2:
+            if data_front['eja1'] == True:
+                if data_front['nomes_turma'][i] == 1 or data_front['nomes_turma'][i] == 2 or data_front['nomes_turma'][i] == 3:
+                    if data_front['nomes_turma'][i] == 1 or data_front['nomes_turma'][i] == 2:
                         obj_historico.nota = None
                     obj_historico.tipo_eja ='eja1'                 
                                 
-            if item['eja2'] == True:
-                if item['nomes_turma'][i] == 4 or item['nomes_turma'][i] == 5:
-                    if item['nomes_turma'][i] == 4:
+            if data_front['eja2'] == True:
+                if data_front['nomes_turma'][i] == 4 or data_front['nomes_turma'][i] == 5:
+                    if data_front['nomes_turma'][i] == 4:
                         obj_historico.nota = None
                     obj_historico.tipo_eja ='eja2'
             
-            if item['eja3'] == True:
-                if item['nomes_turma'][i] == 6 or item['nomes_turma'][i] == 7:
-                    if item['nomes_turma'][i] == 6:
+            if data_front['eja3'] == True:
+                if data_front['nomes_turma'][i] == 6 or data_front['nomes_turma'][i] == 7:
+                    if data_front['nomes_turma'][i] == 6:
                         obj_historico.nota = None
                     obj_historico.tipo_eja ='eja3'
             
-            if item['eja4'] == True:
-                if item['nomes_turma'][i] == 8 or item['nomes_turma'][i] ==  9:
-                    if item['nomes_turma'][i] == 8:
+            if data_front['eja4'] == True:
+                if data_front['nomes_turma'][i] == 8 or data_front['nomes_turma'][i] ==  9:
+                    if data_front['nomes_turma'][i] == 8:
                         obj_historico.nota = None
                     obj_historico.tipo_eja ='eja4'
             
@@ -335,7 +377,7 @@ def atualizar_notas(qsHistoricoNota,item,i):
     
     #deletar notas
     else:
-        deletar_notas(obj_historico,item)
+        deletar_notas(obj_historico,data_front)
 
 def deletar_notas(obj_historico,item):
     '''Se a nota do front vier vazia e for diferente da nota já cadastrada, é pra deletar'''
@@ -365,6 +407,7 @@ def salvar_estudos(request):
         except:
             data = {"success": False, "error": "Erro ao Salvar notas, Json com formato incorreto!!"}        
             return JsonResponse(data,status=404)
+
         qs_historico = HistoricoAluno.objects.filter(aluno__cod_aluno=json_data[0]['cod_aluno']).first()
    
         if qs_historico:
