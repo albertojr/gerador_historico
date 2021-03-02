@@ -37,14 +37,14 @@
         }
 
         #data {
-            margin-top: 6px;
+            margin-top: 4px;
             width: 90%;
             text-align: center;
             margin-left: 50px
         }
 
         #assinaturas {
-            margin-top: 15px;
+            margin-top: 20px;
             font-size: 10pt;
         }
 
@@ -193,7 +193,7 @@
             {% for dados_disciplina in disciplinas %}
                 {% if dados_disciplina.tp_disciplina == "fundamental" %}
                     <tr>
-                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                        <td id="disciplinas"><b>{{dados_disciplina.nome_disciplina}}</b></td>
                             {% for notas in dados_disciplina.notas %}
                                 {% if notas != None%}
                                     <td id="disciplinas">{{notas}}</td>
@@ -209,7 +209,7 @@
                 <td id="disciplinas" ><b>PARTE DIVERSIFICADA</b></td>
                 {% for dados_disciplina in disciplinas %}
                     {% if dados_disciplina.tp_disciplina == "diversificada" %}
-                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                        <td id="disciplinas"><b>{{dados_disciplina.nome_disciplina}}</b></td>
                         {% for notas in dados_disciplina.notas %}
                             {% if notas != None%}
                                 <td id="disciplinas">{{notas}}</td>
@@ -250,7 +250,7 @@
         <tbody class="text-center">
             {% for table_estudos in estudos_feitos %}
                 <tr>
-                    <td>{{table_estudos.ano_turma}}º</td>
+                    <td>{{table_estudos.ano_turma}}º Ano</td>
                     
                     {% if table_estudos.ano_letivo %}
                         <td>{{table_estudos.ano_letivo}}</td>
@@ -285,7 +285,7 @@
             {% endfor %}
         </tbody>
     </table>
-    <div id="assinaturas" class="d-flex justify-content-center"  >
+    <div id="assinaturas" class="row d-flex justify-content-center"  >
         <div class="col-5">
             <h6>Diretor(a): _____________________________________</h6>
         </div>
