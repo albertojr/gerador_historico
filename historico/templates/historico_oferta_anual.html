@@ -28,12 +28,12 @@
                     <tr class="text-center">
                         {% for turma in turmas  %}                                           
                             <td>
-                                {% if turma.ano_turma < '4' %}
-                                    <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="800"></div>
+                                {% if turma.ano_turma < '5' %}
+                                    <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="880"></div>
 
                                 {%else %}
-                                    {%if turma.ano_turma > '3' and turma.ano_turma < '8' %}
-                                        <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="880"></div>
+                                    {%if turma.ano_turma == '5' %}
+                                        <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="814"></div>
                                     
                                     {% else %}
                                         <input class="form-control is-warning form-control-sm text-center " type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$"></div>

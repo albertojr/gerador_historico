@@ -35,7 +35,7 @@ class Disciplina(models.Model):
     historico_base = models.BooleanField(default=False)
 
     def __str__(self):
-        return '{} - Base: {}'.format(self.nome_disciplina,self.historico_base)
+        return '{}'.format(self.nome_disciplina)
 
     class Meta:
         managed = True
