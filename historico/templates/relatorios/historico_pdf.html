@@ -43,8 +43,8 @@
             margin-left: 50px
         }
 
-        #observacoes {
-            margin-top: 8px;
+        #assinaturas {
+            margin-top: 15px;
             font-size: 10pt;
         }
 
@@ -129,15 +129,15 @@
                 <tr>
                     <td class="text-left" colspan="3"><b>FILIAÇÃO:</b>{{dados_aluno.filiacao_1}}
                         {% if dados_aluno.filiacao_2 != '' %}
-                        | {{dados_aluno.filiacao_2}}
+                            | {{dados_aluno.filiacao_2}}
                         {% else%}
-                        {{dados_aluno.filiacao_2}}
+                            {{dados_aluno.filiacao_2}}
                         {% endif %}
                     </td>
                 </tr>
             </tbody>
         </table>
-    </div>
+   
     <h6 class="text-center" id="texto2_cabecalho"><b>CRENDICIAMENTO: PARECER N°</b>:209/2018-<b>VÁLIDO ATÉ:</b>
         30/06/2020(Prorrogado pelo CME)</h6>
     <h6 class="text-center" id="texto2_cabecalho"><b>NOTAS E/OU CONCEITOS</b></h6>
@@ -150,37 +150,36 @@
                 </th>
 
                 {% for turma in turmas %}
-                {% if turma.ano_turma <= '3' %} {% if tipo_eja.eja1 == True %} <th scope="col">{{turma.ano_turma}}º ANO |
-                    EJA1</th>
-                    {%else%}
-                    <th scope="col">{{turma.ano_turma}}º ANO</th>
-                    {% endif %}
-                    {% endif %}
+                    {% if turma.ano_turma <= '3' %} {% if tipo_eja.eja1 == True %} <th scope="col">{{turma.ano_turma}}º ANO |
+                        EJA1</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                            {% endif %}
+                        {% endif %}
 
-                    {% if turma.ano_turma == '4' or turma.ano_turma == '5'%}
-                    {% if tipo_eja.eja2 == True %}
-                    <th scope="col">{{turma.ano_turma}}º ANO | EJA2</th>
-                    {%else%}
-                    <th scope="col">{{turma.ano_turma}}º ANO</th>
-                    {% endif %}
-                    {% endif %}
+                        {% if turma.ano_turma == '4' or turma.ano_turma == '5'%}
+                            {% if tipo_eja.eja2 == True %}
+                                <th scope="col">{{turma.ano_turma}}º ANO | EJA2</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                        {% endif %}
+                        {% endif %}
 
-                    {% if turma.ano_turma == '6' or turma.ano_turma == '7'%}
-                    {% if tipo_eja.eja3 == True %}
-                    <th scope="col">{{turma.ano_turma}}º ANO | EJA3</th>
-                    {%else%}
-                    <th scope="col">{{turma.ano_turma}}º ANO</th>
-                    {% endif %}
-                    {% endif %}
+                        {% if turma.ano_turma == '6' or turma.ano_turma == '7'%}
+                            {% if tipo_eja.eja3 == True %}
+                                <th scope="col">{{turma.ano_turma}}º ANO | EJA3</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                            {% endif %}
+                        {% endif %}
 
-                    {% if turma.ano_turma == '8' or turma.ano_turma == '9'%}
-                    {% if tipo_eja.eja4 == True %}
-                    <th scope="col">{{turma.ano_turma}}º ANO | EJA4</th>
-                    {%else%}
-                    <th scope="col">{{turma.ano_turma}}º ANO</th>
-                    {% endif %}
-                    {% endif %}
-
+                        {% if turma.ano_turma == '8' or turma.ano_turma == '9'%}
+                            {% if tipo_eja.eja4 == True %}
+                                <th scope="col">{{turma.ano_turma}}º ANO | EJA4</th>
+                        {%else%}
+                            <th scope="col">{{turma.ano_turma}}º ANO</th>
+                        {% endif %}
+                        {% endif %}
                     {% endfor %}
             </tr>
         </thead>
@@ -192,87 +191,44 @@
             </tr>
 
             {% for dados_disciplina in disciplinas %}
-            {% if dados_disciplina.tp_disciplina == "fundamental" %}
-            <tr>
-                <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
-                {% for notas in dados_disciplina.notas %}
-                {% if notas != None%}
-                <td id="disciplinas">{{notas}}</td>
-                {%else%}
-                <td id="disciplinas">-</td>
-                {%endif%}
-                {% endfor %}
-            </tr>
-            {% endif %}
+                {% if dados_disciplina.tp_disciplina == "fundamental" %}
+                    <tr>
+                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                            {% for notas in dados_disciplina.notas %}
+                                {% if notas != None%}
+                                    <td id="disciplinas">{{notas}}</td>
+                                {%else%}
+                                    <td id="disciplinas">-</td>
+                                {%endif%}
+                            {% endfor %}
+                    </tr>
+                {% endif %}
             {% endfor %}
 
             <tr>
-                <td>
-                    <br>
-                </td>
-                {% for turma in turmas %}
-                <td>
-                    <br>
-                </td>
-                {% endfor %}
-            </tr>
-
-            <tr>
-                <td>
-                    <br>
-                </td>
-                {% for turma in turmas %}
-                <td>
-                    <br>
-                </td>
-                {% endfor %}
-            </tr>
-
-            <tr>
-                <td>
-                    <br>
-                </td>
-                {% for turma in turmas %}
-                <td>
-                    <br>
-                </td>
-                {% endfor %}
-            </tr>
-
-            <tr>
-                <td id="disciplinas" rowspan="2"><b>PARTE DIVERSIFICADA</b></td>
+                <td id="disciplinas" ><b>PARTE DIVERSIFICADA</b></td>
                 {% for dados_disciplina in disciplinas %}
-                {% if dados_disciplina.tp_disciplina == "diversificada" %}
-                <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
-                {% for notas in dados_disciplina.notas %}
-                {% if notas != None%}
-                <td id="disciplinas">{{notas}}</td>
-                {%else%}
-                <td id="disciplinas">-</td>
-                {%endif%}
-                {% endfor %}
-                {% endif %}
-                {% endfor %}
-            </tr>
-            <tr>
-                <td>
-                    <br>
-                </td>
-                {% for turma in turmas %}
-                <td>
-                    <br>
-                </td>
+                    {% if dados_disciplina.tp_disciplina == "diversificada" %}
+                        <td id="disciplinas">{{dados_disciplina.nome_disciplina}}</td>
+                        {% for notas in dados_disciplina.notas %}
+                            {% if notas != None%}
+                                <td id="disciplinas">{{notas}}</td>
+                            {%else%}
+                                <td id="disciplinas">-</td>
+                            {%endif%}
+                        {% endfor %}
+                    {% endif %}
                 {% endfor %}
             </tr>
-
-            <tr class="text-center">
+           
+            <tr class="text-center" >
                 <td colspan="2"><b>OFERTA ANUAL</b></td>
-                {% for turma in turmas %}
-                {% if turma.ch == None %}
-                <td> </td>
-                {% else %}
-                <td>{{turma.ch}}</td>
-                {% endif %}
+                {% for ch_anual in oferta_anual %}
+                    {% if ch_anual.carga_horaria %}
+                        <td>{{ch_anual.carga_horaria}}</td>
+                    {% else %}
+                        <td> - </td>
+                    {% endif %}
                 {% endfor %}
             </tr>
         </tbody>
@@ -293,41 +249,55 @@
         </thead>
         <tbody class="text-center">
             {% for table_estudos in estudos_feitos %}
-
-            {% if tipo_eja.eja1 == False or tipo_eja.eja2 == False %}
-            {% if table_estudos.ano_turma <= '5' %} <tr>
-                <td>{{table_estudos.ano_turma}}º</td>
-                <td>{{table_estudos.ano_letivo}}</td>
-                <td>{{table_estudos.escola}}</td>
-                <td>{{table_estudos.municipio}}</td>
-                <td>{{table_estudos.uf}}</td>
-                <td>{{table_estudos.resultado}}</td>
-                </tr>
-                {% endif %}
-                {%else%}
                 <tr>
                     <td>{{table_estudos.ano_turma}}º</td>
-                    <td>{{table_estudos.ano_letivo}}</td>
-                    <td>{{table_estudos.escola}}</td>
-                    <td>{{table_estudos.municipio}}</td>
-                    <td>{{table_estudos.uf}}</td>
-                    <td>{{table_estudos.resultado}}</td>
-                </tr>
-                {% endif %}
-                {% endfor %}
+                    
+                    {% if table_estudos.ano_letivo %}
+                        <td>{{table_estudos.ano_letivo}}</td>
+                    {% else %}
+                        <td>-----</td>
+                    {% endif %}
+
+                    {% if table_estudos.escola  %}
+                        <td>{{table_estudos.escola}}</td>
+                    {% else %}
+                        <td>-----</td>
+                    {% endif %}
+    
+                    {% if table_estudos.municipio %}
+                        <td>{{table_estudos.municipio}}</td>
+                    {% else %}
+                        <td>-----</td>
+                    {% endif %}
+                    
+                    {% if table_estudos.uf %}
+                        <td>{{table_estudos.uf}}</td>
+                    {% else %}
+                        <td>-----</td>
+                    {% endif %}
+                    
+                    {% if table_estudos.resultado %}
+                        <td>{{table_estudos.resultado}}</td>
+                    {%else%}
+                        <td>-----</td>
+                    {% endif %}
+                </tr> 
+            {% endfor %}
         </tbody>
     </table>
-    <div id="observacoes" >
-        <h6 class="text-center">
-            <b>OBSERVAÇÕES:</b>
-        </h6>
-        <h4 class="text-center">___________________________________________________________________________</h4>
-        <h4 class="text-center">____________________________________________________________________________</h4>
+    <div id="assinaturas" class="d-flex justify-content-center"  >
+        <div class="col-5">
+            <h6>Diretor(a): _____________________________________</h6>
+        </div>
+        <div class="col-5">
+            <h6>Secretário(a): _____________________________________</h6>
+        </div>
     </div>
     <br>
     <br>
     <div id="data" class="text-center">
     <h5 class="text-center"> Crato - CE, {{data}}</h5>
+    </div>
     </div>
 
 

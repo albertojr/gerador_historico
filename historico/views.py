@@ -499,7 +499,6 @@ def atualizar_oferta_anual(cod_aluno,ano_turma,carga_hr_turma):
         data = {"errors": "true", "messages":"Erro ao atualizar Oferta Anual"}        
         return data
 
-
 def relatorio_pdf(request,cod_aluno):
     qs_aluno = Aluno.objects.filter(cod_aluno=cod_aluno).values()
     
@@ -507,17 +506,14 @@ def relatorio_pdf(request,cod_aluno):
         ls_turmas = list()
         ls_disciplinas = list()
         ls_estudos_feitos = list()
+        ls_ch_anual = list()
         tem_historico = False
         dados_aluno = {}
         ejas = {'eja1':False,'eja2':False,'Eja3':False,'Eja4':False}
        
+        qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno).values('nota','tipo_eja')
 
-        historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno)
-
-        qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
-        'ano_turma','carga_hr','disciplinas__turma_disciplinas__disciplinas__cod_disciplina',
-        'disciplinas__turma_disciplinas__disciplinas__nome_disciplina',
-        'disciplinas__turma_disciplinas__disciplinas__tipo_disciplina')
+        qsturmas = Turma.objects.filter(status_turma=True)
 
         for aluno in qs_aluno:
             dados_aluno = {'nome':aluno['nome_aluno'].upper(),
@@ -530,87 +526,104 @@ def relatorio_pdf(request,cod_aluno):
 
             if aluno['filiacao_aluno2'] != None:
                 dados_aluno['filiacao_2'] = aluno['filiacao_aluno2'].upper()
-           
-                        
-        for item in qsturmas.distinct("disciplinas__turma_disciplinas__disciplinas__cod_disciplina"):
-            disciplina_na_lista = False
-                       
-            # if qs_disciplina:
-            dict_disciplinas = {'cod_turma':item['cod_turma'],
-            'cod_disciplina':item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'],
-            'nome_disciplina':item['disciplinas__turma_disciplinas__disciplinas__nome_disciplina'].upper(),
-            'tp_disciplina':item['disciplinas__turma_disciplinas__disciplinas__tipo_disciplina']}
-        
-            for ls_disciplina_pronta in ls_disciplinas:
-                if item['disciplinas__turma_disciplinas__disciplinas__cod_disciplina'] == ls_disciplina_pronta['cod_disciplina']:
-                    disciplina_na_lista = True
+                          
+        for turmas in qsturmas.distinct('ano_turma'):
+            ls_turmas.append({'ano_turma':turmas.ano_turma})
+            dict_estudos = {'ano_turma':turmas.ano_turma}
             
-            if not disciplina_na_lista:
-                ls_disciplinas.append(dict_disciplinas)
-            
-        for item in qsturmas.distinct('ano_turma'):
-            dict_turmas = {'cod_turma':item['cod_turma'],
-            'ano_turma':item['ano_turma'],
-            'ch':item['carga_hr']
-            }
-            ls_turmas.append(dict_turmas)
-
+            #verifica se tem algo na tabela de estudos
             qs_estudos = EstudosHistorico.objects.filter(historico_estudo__aluno__cod_aluno=cod_aluno,
-            ano_turma_estudo__ano_turma=item['ano_turma']).order_by("ano_turma_estudo__ano_turma").values('ano_turma_estudo__ano_turma','escola_ensino_estudo',
-            'municipio_estudo','estado_estudo','resultado_estudo','ano_letivo_estudo')
+            ano_turma_estudo__ano_turma=turmas.ano_turma)
 
-            if qs_estudos:
-                dict_estudos = {'ano_turma':item['ano_turma'],'ano_letivo':'','escola':'',
-                'municipio':'','uf':'','resultado':''}
-                for estudos in qs_estudos:
-                    if not estudos['ano_letivo_estudo']:
-                        dict_estudos['ano_letivo'] = ""
-                    else:
-                        dict_estudos['ano_letivo'] = estudos['ano_letivo_estudo'].strftime("%Y")
+            for estudos in qs_estudos:
+                if  estudos.ano_letivo_estudo:
+                    dict_estudos['ano_letivo'] = estudos.ano_letivo_estudo.year
+                dict_estudos['escola'] = estudos.escola_ensino_estudo.upper()
+                dict_estudos['municipio'] = estudos.municipio_estudo.upper()
+                dict_estudos['uf'] = estudos.estado_estudo.upper()
+                dict_estudos['resultado'] = estudos.resultado_estudo.upper()
+            ls_estudos_feitos.append(dict_estudos)
+            
+            #montando oferta anual
+            dict_oferta_anual = {'ano_turma':turmas.ano_turma}
+
+            oferta_anual = OfertaAnual.objects.filter(
+                aluno__cod_aluno=cod_aluno,turma__ano_turma=turmas.ano_turma).distinct(
+                "turma__ano_turma")
+            
+            for ch_anual in oferta_anual:
+                dict_oferta_anual['carga_horaria'] = ch_anual.ch_hr_anual
+            
+            ls_ch_anual.append(dict_oferta_anual)
+        #fim dos valores estudos
+            
+        if qs_historicos:
+            historico_disciplina = list()
+
+            #valores do eja:
+            eja1=False
+            eja2=False
+            eja3=False
+            eja4=False
+           
+            for ejas in qs_historicos:
+                if ejas['tipo_eja'] != None and ejas['tipo_eja']:
+                    if ejas['tipo_eja'] == 'eja1':
+                        eja1=True
+                    elif ejas['tipo_eja'] == 'eja2':
+                        eja2 = True
+                    elif ejas['tipo_eja'] == 'eja3':
+                        eja3=True
+                    elif ejas['tipo_eja'] == 'eja4':
+                        eja4 = True
+
+        #add notas em cada disciplina          
+        for qs_disciplinas in Disciplina.objects.all().distinct("cod_disciplina","nome_disciplina"):
+            lista_notas=list()
+            
+            hs_notas_por_disciplina = qs_historicos.filter(
+                disciplina_historico=qs_disciplinas.cod_disciplina)
+            
+            #se essa disciplina tiver no histórico
+            if hs_notas_por_disciplina:
+                for ano_turma in range(1,10):
+                    notas_por_turma = hs_notas_por_disciplina.filter(turma_historico__ano_turma = ano_turma)
                     
-                    dict_estudos['escola'] = estudos['escola_ensino_estudo'].upper()
-                    dict_estudos['municipio'] = estudos['municipio_estudo'].upper()
-                    dict_estudos['uf'] = estudos['estado_estudo'].upper()
-                    dict_estudos['resultado'] = estudos['resultado_estudo']
-                ls_estudos_feitos.append(dict_estudos)
-        
-        #add notas na disciplina
-        for item in ls_disciplinas:
-            ls_notas = list()
-            for turmas in ls_turmas:
-                qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno =cod_aluno,
-                disciplina_historico__cod_disciplina=item['cod_disciplina'],
-                turma_historico__cod_turma=turmas['cod_turma']).values('nota','tipo_eja')
+                    if notas_por_turma:
+                        lista_notas.append(str(notas_por_turma[0]["nota"]))
 
-                if qs_historicos:
-                    ls_notas.append(qs_historicos[0]['nota'])
+                    else:
+                        lista_notas.append(None)
 
-                    if qs_historicos[0]['tipo_eja'] != None:
-                        if qs_historicos[0]['tipo_eja'] == 'eja1':
-                            ejas['eja1'] = True
+                ls_disciplinas.append({'cod_disciplina':qs_disciplinas.cod_disciplina,
+                'nome_disciplina':qs_disciplinas.nome_disciplina.upper(),
+                'tp_disciplina':qs_disciplinas.tipo_disciplina,
+                'notas':lista_notas})
 
-                        elif qs_historicos[0]['tipo_eja'] == 'eja2':
-                            ejas['eja2'] = True
+            # se não tiver no historico, add a lista apenas se for base
+            else:
+                disciplina_base = Disciplina.objects.filter(
+                    cod_disciplina=qs_disciplinas.cod_disciplina,historico_base=True).distinct("cod_disciplina","nome_disciplina")
+                if disciplina_base:
+                    #add a lista para inicializar no form
+                    ls_disciplinas.append(
+                        {'cod_disciplina':qs_disciplinas.cod_disciplina,
+                        'nome_disciplina':qs_disciplinas.nome_disciplina.upper(),
+                        'tp_disciplina':qs_disciplinas.tipo_disciplina,
+                        "notas":[None,None,None,None,None,None,None,None,None]
+                        })
 
-                        elif qs_historicos[0]['tipo_eja'] == 'eja3':
-                            ejas['eja3'] = True
-                        
-                        elif qs_historicos[0]['tipo_eja'] == 'eja4':
-                                ejas['eja4'] = True
-                else:
-                    ls_notas.append(None)
-                
-            item.update({'notas':ls_notas})
-
-        params =  {'dados_aluno':dados_aluno,
+        params =  {
+            'dados_aluno':dados_aluno,
             'turmas': ls_turmas,
             'estudos_feitos':ls_estudos_feitos,
             'disciplinas':ls_disciplinas,
             'tipo_eja':ejas,
             'historico':tem_historico,
-            'qnt_disciplinas':len(ls_disciplinas)+3,
-            'data':data_hoje()}
-
+            'qnt_disciplinas':len(ls_disciplinas),
+            'oferta_anual':ls_ch_anual,
+            'data':data_hoje()
+            }
         return RenderPdf.render('relatorios/historico_pdf.html', 
         params, 
         'Histórico - '+dados_aluno['nome'], request)

@@ -316,7 +316,7 @@ $('#form_table_notas').on('submit', function (event) {
 });
 
 function gerar_pdf() {
-    var cod_aluno = $("#id_aluno").val();
+    var cod_aluno = $("#id_alunos").val();
     url = "/historicos/relatorio/pdf/" + cod_aluno;
 
     cod_button = document.getElementById('btn_gerar_pdf')
