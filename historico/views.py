@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.contrib.auth.decorators import login_required
-from historico.models import HistoricoAluno,Turma,Disciplina,EstudosHistorico,OfertaAnual
+from historico.models import *
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime,date
@@ -76,9 +76,8 @@ def add_form_line_historico(request):
             dict_oferta_anual = {'ano_turma':turmas['ano_turma'],'ch_anual':''}
 
             oferta_anual = OfertaAnual.objects.filter(
-            historico_aluno__aluno__cod_aluno=cod_aluno,
-            historico_aluno__turma_historico__ano_turma=turmas['ano_turma']).distinct(
-                "historico_aluno__turma_historico__ano_turma")
+                aluno__cod_aluno=cod_aluno,turma__ano_turma=turmas['ano_turma']).distinct(
+                "turma__ano_turma")
             
             for ch_anual in oferta_anual:
                 dict_oferta_anual['ch_anual'] = ch_anual.ch_hr_anual
@@ -447,6 +446,59 @@ def salvar_estudos(request):
     
     data = {"success": "Estudos salvos com sucesso!"}                            
     return JsonResponse(data)
+
+@login_required
+def oferta_anual(request):
+    if request.method == 'POST':
+        data = {}
+        try:
+            json_data = request.body
+            json_data = json.loads(json_data)
+                
+        except:
+            data = {"errors": True, "messages": "Erro ao Salvar oferta anual, Json com formato incorreto!!"}        
+            return JsonResponse(data,status=404)
+        
+        qs_historico = HistoricoAluno.objects.filter(aluno__cod_aluno=json_data['cod_aluno']).first()
+
+        if qs_historico:
+            ofertas_anuais = OfertaAnual.objects.filter(aluno=json_data['cod_aluno'])
+            for i in range(len(json_data['ofertas_ano'])):
+                carga_hr_turma = json_data['ofertas_ano'][i]
+                ano_turma = i+1
+
+                if carga_hr_turma != '':
+                    #verifica se essa ch já não foi lançada
+                    if not ofertas_anuais.filter(turma__ano_turma = ano_turma):
+                        try:
+                            obj_oferta_anual = OfertaAnual()
+                            obj_oferta_anual.aluno = Aluno.objects.get(cod_aluno=json_data['cod_aluno']) 
+                            obj_oferta_anual.turma = Turma.objects.get(ano_turma=ano_turma)
+                            obj_oferta_anual.ch_hr_anual = carga_hr_turma
+                            obj_oferta_anual.save()
+                        
+                        except:
+                            data = {"error": True, "messages": "Erro ao Salvar Oferta Anual"}        
+                            return JsonResponse(data,status=404)
+
+                    else:
+                        oferta_anual = atualizar_oferta_anual(json_data['cod_aluno'],ano_turma,carga_hr_turma)
+                        if oferta_anual:
+                            return JsonResponse(oferta_anual,status=404)
+            
+            data = {"success": "Oferta anual salva com sucesso!"}                            
+            return JsonResponse(data)
+
+def atualizar_oferta_anual(cod_aluno,ano_turma,carga_hr_turma):
+    try:
+        obj_oferta_anual = OfertaAnual.objects.get(aluno=cod_aluno,turma__ano_turma=ano_turma)
+        if obj_oferta_anual.ch_hr_anual != carga_hr_turma:
+            obj_oferta_anual.ch_hr_anual = carga_hr_turma
+            obj_oferta_anual.save(update_fields = ['ch_hr_anual'])
+    except:
+        data = {"errors": "true", "messages":"Erro ao atualizar Oferta Anual"}        
+        return data
+
 
 def relatorio_pdf(request,cod_aluno):
     qs_aluno = Aluno.objects.filter(cod_aluno=cod_aluno).values()

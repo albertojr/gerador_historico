@@ -87,8 +87,8 @@ class EstudosHistorico(models.Model):
 
 class OfertaAnual(models.Model):
     cod_oferta_anual = models.AutoField(primary_key=True)
-    historico_aluno = models.ForeignKey('HistoricoAluno',verbose_name="Aluno",on_delete=models.CASCADE)
-    turma_ch_anual = models.ForeignKey('Turma',verbose_name="Turma",on_delete=models.CASCADE)
+    aluno = models.ForeignKey('aluno.Aluno',verbose_name="Aluno",on_delete=models.CASCADE)
+    turma = models.ForeignKey('Turma',verbose_name="Turma",on_delete=models.CASCADE)
     ch_hr_anual = models.IntegerField(verbose_name="Carga Horaria")
 
     class Meta:
@@ -97,8 +97,8 @@ class OfertaAnual(models.Model):
 
     def __str__ (self):
         return 'cod.{} | {} | {}º Ano | C.H {}'.format(self.cod_oferta_anual,
-        self.historico_aluno.aluno.nome_aluno,
-        self.historico_aluno.turma_historico.ano_turma,
+        self.aluno.nome_aluno,
+        self.turma.ano_turma,
         self.ch_hr_anual)
 
 

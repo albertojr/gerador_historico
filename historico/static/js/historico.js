@@ -182,8 +182,25 @@ function get_notas_tabela() {
             arrayNovasNotas.push(obj_notas);
         }
     });
-    console.log(arrayNovasNotas)
     return arrayNovasNotas
+}
+
+function get_ch_anual() {
+
+    var array_ch_anos_turma = []
+    var obj_ch_anos = {};
+
+    obj_ch_anos.cod_aluno = $("#id_alunos").val()
+
+    $("#table_oferta_anual tbody tr td").each(function (item) {
+        var td_atual = $(this);
+        array_ch_anos_turma.push(td_atual.find("input[type='number']").val())
+    });
+
+    obj_ch_anos.ofertas_ano = array_ch_anos_turma
+
+    return obj_ch_anos
+
 }
 
 function get_dados_tabela_estudos() {
@@ -217,7 +234,6 @@ function get_dados_tabela_estudos() {
 
         arrayObjEstudos.push(obj_estudos)
 
-
     });
 
     return arrayObjEstudos
@@ -229,7 +245,7 @@ $('#form_table_notas').on('submit', function (event) {
     novasNotas = get_notas_tabela()
     dadosTabelaEstudos = get_dados_tabela_estudos()
     // $("#btn_salvar_notas").attr("disabled", true);
-
+    console.log(get_ch_anual())
 
     $.ajax({
         headers: { "X-CSRFToken": $.cookie("csrftoken") },
@@ -240,7 +256,6 @@ $('#form_table_notas').on('submit', function (event) {
         dataType: 'json',
         success: function (data) {
             toastr.success('Notas Salvas com Sucesso!')
-            // buscar_dados_tabela()
 
             $.ajax({
                 headers: { "X-CSRFToken": $.cookie("csrftoken") },
@@ -253,12 +268,35 @@ $('#form_table_notas').on('submit', function (event) {
                 success: function (data) {
                     toastr.success('Dados de estudos salvos com sucesso!')
                     $("#btn_salvar_notas").attr("disabled", false);
-                    buscar_dados_tabela()
                 },
 
                 error: function (data) {
                     Swal.fire({
                         title: "" + data.error + "",
+                        text: 'Clique em ok para continuar',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    })
+                },
+            })
+
+            //ajax oferta anual
+            $.ajax({
+                headers: { "X-CSRFToken": $.cookie("csrftoken") },
+                type: "POST",
+                contentType: "application/json",
+                url: "tabela/ofertaanual",
+                data: JSON.stringify(get_ch_anual()), // convert array to JSON
+                dataType: 'json',
+
+                success: function (data) {
+                    toastr.success('Oferta anual salvo com sucesso!')
+                    $("#btn_salvar_notas").attr("disabled", false);
+                },
+
+                error: function (data) {
+                    Swal.fire({
+                        title: "" + data.responseJSON.messages + "",
                         text: 'Clique em ok para continuar',
                         icon: 'error',
                         confirmButtonText: 'Ok'

@@ -5,24 +5,31 @@
 {% load crispy_forms_tags %}
 
 {%block menu%}
-    <li class="nav-item">
-        <a href="{% url 'home_geral' %}" class="nav-link">
-            <i class="far fa-circle nav-icon"></i>
-            <p>Home</p>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a href="{% url 'add_historicos' %}" class="nav-link active">
-            <i class="far fa-circle nav-icon"></i>
-            <p>Criar histórico</p>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a href="/admin/aluno/aluno/" target="_blank" class="nav-link">
-            <i class="far fa-circle nav-icon"></i>
-            <p>Cadastro aluno</p>
-        </a>
-    </li>
+<li class="nav-item">
+    <a href="{% url 'home_geral' %}" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Home</p>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="{% url 'add_historicos' %}" class="nav-link active">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Criar histórico</p>
+    </a>
+</li>
+<li class="nav-item">
+    <a href="/admin/aluno/aluno/" target="_blank" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Cadastro aluno</p>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a href="/admin/historico/disciplina/" target="_blank" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Cadastro disciplinas</p>
+    </a>
+</li>
 {%endblock%}
 
 {%block header%}
@@ -71,7 +78,7 @@
 
         </ul>
     </div><!-- /.card-header -->
-    <form method="POST" id="form_table_notas" action="{% url 'add_historicos' %}">                             
+    <form method="POST" id="form_table_notas" action="{% url 'add_historicos' %}">
         <div class="card-body">
             <div class="tab-content" id="pills-tabContent">
                 {% csrf_token %}
@@ -99,7 +106,7 @@
 
 {% block scripts %}
 <link rel="stylesheet" href="{% static 'css/historico.css' %}?version=1.2">
-<script src="{% static 'js/historico.js' %}?version=1.3"></script>
+<script src="{% static 'js/historico.js' %}?version=1.4"></script>
 
 <script type="text/html" id="disciplina-notas">
     <td style="width:50px">
@@ -121,6 +128,3 @@
 {% endblock %}
 
 {%endblock%}
-
-
-
