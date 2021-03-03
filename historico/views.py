@@ -485,7 +485,15 @@ def oferta_anual(request):
                         oferta_anual = atualizar_oferta_anual(json_data['cod_aluno'],ano_turma,carga_hr_turma)
                         if oferta_anual:
                             return JsonResponse(oferta_anual,status=404)
-            
+                else:
+                    obj_oferta_anual = ofertas_anuais.filter(turma__ano_turma = ano_turma)
+                    if obj_oferta_anual :
+                        try:
+                            obj_oferta_anual.delete()
+                        except:
+                            data = {"errors": "true", "messages":"Erro ao deletar Oferta Anual!"}        
+                            return JsonResponse(data,status=404)
+
             data = {"success": "Oferta anual salva com sucesso!"}                            
             return JsonResponse(data)
 
@@ -498,6 +506,11 @@ def atualizar_oferta_anual(cod_aluno,ano_turma,carga_hr_turma):
     except:
         data = {"errors": "true", "messages":"Erro ao atualizar Oferta Anual"}        
         return data
+
+def delete_oferta_anual(obj):
+    print(obj.cod_oferta_anual)
+   
+    
 
 def relatorio_pdf(request,cod_aluno):
     qs_aluno = Aluno.objects.filter(cod_aluno=cod_aluno).values()

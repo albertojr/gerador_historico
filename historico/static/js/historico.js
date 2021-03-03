@@ -239,7 +239,7 @@ function get_dados_tabela_estudos() {
 
 }
 $('#form_table_notas').on('submit', function (event) {
-    // $("#btn_salvar_notas").attr("disabled", true);
+    $("#btn_salvar_notas").attr("disabled", true);
     event.preventDefault();
     novasNotas = get_notas_tabela()
     dadosTabelaEstudos = get_dados_tabela_estudos()
@@ -264,11 +264,39 @@ $('#form_table_notas').on('submit', function (event) {
 
                 success: function (data) {
                     toastr.success('Dados de estudos salvos com sucesso!')
-                    $("#btn_salvar_notas").attr("disabled", false);
-                    function reload() {
-                        document.location.reload();
-                    }
-                    setTimeout(reload, 1000);
+
+                    //ajax oferta anual
+                    $.ajax({
+                        headers: { "X-CSRFToken": $.cookie("csrftoken") },
+                        type: "POST",
+                        contentType: "application/json",
+                        url: "tabela/ofertaanual",
+                        data: JSON.stringify(get_ch_anual()), // convert array to JSON
+                        dataType: 'json',
+
+                        success: function (data) {
+                            toastr.success('Oferta anual salvo com sucesso!')
+                            $("#btn_salvar_notas").attr("disabled", false);
+
+                            function reload() {
+                                document.location.reload();
+                            }
+                            setTimeout(reload, 1000);
+                        },
+
+                        error: function (data) {
+                            Swal.fire({
+                                title: "" + data.responseJSON.messages + "",
+                                text: 'Clique em ok para continuar',
+                                icon: 'error',
+                                confirmButtonText: 'Ok'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    document.location.reload();
+                                }
+                            })
+                        },
+                    })
                 },
 
                 error: function (data) {
@@ -277,30 +305,10 @@ $('#form_table_notas').on('submit', function (event) {
                         text: 'Clique em ok para continuar',
                         icon: 'error',
                         confirmButtonText: 'Ok'
-                    })
-                },
-            })
-
-            //ajax oferta anual
-            $.ajax({
-                headers: { "X-CSRFToken": $.cookie("csrftoken") },
-                type: "POST",
-                contentType: "application/json",
-                url: "tabela/ofertaanual",
-                data: JSON.stringify(get_ch_anual()), // convert array to JSON
-                dataType: 'json',
-
-                success: function (data) {
-                    toastr.success('Oferta anual salvo com sucesso!')
-                    $("#btn_salvar_notas").attr("disabled", false);
-                },
-
-                error: function (data) {
-                    Swal.fire({
-                        title: "" + data.responseJSON.messages + "",
-                        text: 'Clique em ok para continuar',
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.location.reload();
+                        }
                     })
                 },
             })
@@ -311,6 +319,10 @@ $('#form_table_notas').on('submit', function (event) {
                 text: 'Clique em ok para continuar',
                 icon: 'error',
                 confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.location.reload();
+                }
             })
         },
     });
