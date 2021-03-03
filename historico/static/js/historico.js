@@ -235,7 +235,6 @@ function get_dados_tabela_estudos() {
         arrayObjEstudos.push(obj_estudos)
 
     });
-    console.log(arrayObjEstudos)
     return arrayObjEstudos
 
 }
@@ -266,6 +265,10 @@ $('#form_table_notas').on('submit', function (event) {
                 success: function (data) {
                     toastr.success('Dados de estudos salvos com sucesso!')
                     $("#btn_salvar_notas").attr("disabled", false);
+                    function reload() {
+                        document.location.reload();
+                    }
+                    setTimeout(reload, 1000);
                 },
 
                 error: function (data) {

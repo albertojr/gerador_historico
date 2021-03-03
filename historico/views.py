@@ -437,7 +437,7 @@ def salvar_estudos(request):
                     qs_estudos_realizados.save()
                 
                 except Exception as e:
-                    data = {"success": False, "error": "Problemas ao salvar/atulizar Estudos!!"}
+                    data = {"success": False, "error": "Problemas ao salvar/atualizar Estudos!!"}
                     return JsonResponse(data,status=404)              
         else:
             #não tem historico salvo ainda!
