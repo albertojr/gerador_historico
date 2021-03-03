@@ -211,7 +211,7 @@ function get_dados_tabela_estudos() {
         var linhaAtual = $(this);
         var obj_estudos = {};
 
-        var turma = linhaAtual.find("td:eq(0)").text();
+        var turma = linhaAtual.find("td:eq(0) #turma").text();
         var ano_letivo = linhaAtual.find("td:eq(1) input[type='number']").val();
         var nome_escola = linhaAtual.find("td:eq(2) input[type='text']").val();
         var nome_cidade = linhaAtual.find("td:eq(3) input[type='text']").val();
@@ -235,7 +235,7 @@ function get_dados_tabela_estudos() {
         arrayObjEstudos.push(obj_estudos)
 
     });
-
+    console.log(arrayObjEstudos)
     return arrayObjEstudos
 
 }
@@ -244,8 +244,6 @@ $('#form_table_notas').on('submit', function (event) {
     event.preventDefault();
     novasNotas = get_notas_tabela()
     dadosTabelaEstudos = get_dados_tabela_estudos()
-    // $("#btn_salvar_notas").attr("disabled", true);
-    console.log(get_ch_anual())
 
     $.ajax({
         headers: { "X-CSRFToken": $.cookie("csrftoken") },
@@ -272,7 +270,7 @@ $('#form_table_notas').on('submit', function (event) {
 
                 error: function (data) {
                     Swal.fire({
-                        title: "" + data.error + "",
+                        title: "" + data.responseJSON.error + "",
                         text: 'Clique em ok para continuar',
                         icon: 'error',
                         confirmButtonText: 'Ok'

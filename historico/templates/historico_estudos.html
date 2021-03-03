@@ -16,7 +16,7 @@
                 {% for hs_estudos in estudos_feitos %}
                 <tr class="text-center">
                     <td>
-                        <h4><span class="badge badge-secondary">{{hs_estudos.ano_turma}}º Ano</span></h4>
+                        <h4><span class="badge badge-secondary" id="turma">{{hs_estudos.ano_turma}}º Ano</span></h4>
                     </td>
                     <td><input class="form-control form-control-sm text-center" type="number" placeholder="Digite"
                             pattern="[0-9]+$" value="{{hs_estudos.ano_letivo}}"></td>
