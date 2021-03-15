@@ -150,23 +150,26 @@
                 </th>
 
                 {% for turma in turmas %}
-                    {% if turma.ano_turma <= '3' %} {% if tipo_eja.eja1 == True %} <th scope="col">{{turma.ano_turma}}º ANO |
-                        EJA1</th>
+                    {% if turma.ano_turma <= '3' %} 
+                        {% if eja1 == True %} 
+                            <th scope="col">{{turma.ano_turma}}º ANO | EJA1</th>
                         {%else%}
                             <th scope="col">{{turma.ano_turma}}º ANO</th>
-                            {% endif %}
+                        {% endif %}
+
                         {% endif %}
 
                         {% if turma.ano_turma == '4' or turma.ano_turma == '5'%}
-                            {% if tipo_eja.eja2 == True %}
+                            {% if eja2 == True %}
                                 <th scope="col">{{turma.ano_turma}}º ANO | EJA2</th>
                         {%else%}
                             <th scope="col">{{turma.ano_turma}}º ANO</th>
                         {% endif %}
+
                         {% endif %}
 
                         {% if turma.ano_turma == '6' or turma.ano_turma == '7'%}
-                            {% if tipo_eja.eja3 == True %}
+                            {% if eja3 == True %}
                                 <th scope="col">{{turma.ano_turma}}º ANO | EJA3</th>
                         {%else%}
                             <th scope="col">{{turma.ano_turma}}º ANO</th>
@@ -174,11 +177,12 @@
                         {% endif %}
 
                         {% if turma.ano_turma == '8' or turma.ano_turma == '9'%}
-                            {% if tipo_eja.eja4 == True %}
+                            {% if eja4 == True %}
                                 <th scope="col">{{turma.ano_turma}}º ANO | EJA4</th>
                         {%else%}
                             <th scope="col">{{turma.ano_turma}}º ANO</th>
                         {% endif %}
+                        
                         {% endif %}
                     {% endfor %}
             </tr>
@@ -250,8 +254,45 @@
         <tbody class="text-center">
             {% for table_estudos in estudos_feitos %}
                 <tr>
-                    <td>{{table_estudos.ano_turma}}º Ano</td>
-                    
+                    {% if table_estudos.ano_turma < '4' %}
+                        {% if eja1 %}
+                            <td>{{table_estudos.ano_turma}}º Ano | EJA1</td>
+                        {% else %}
+                             <td>{{table_estudos.ano_turma}}º Ano</td>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if table_estudos.ano_turma == '4' or table_estudos.ano_turma == '5' %}
+                        {% if eja2 %}
+                            <td>{{table_estudos.ano_turma}}º Ano | EJA2</td>
+                        {% else %}
+                             <td>{{table_estudos.ano_turma}}º Ano</td>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if table_estudos.ano_turma == '6' or table_estudos.ano_turma == '7' %}
+                        {% if eja3 %}
+                            <td>{{table_estudos.ano_turma}}º Ano | EJA3</td>
+                        {% else %}
+                             <td>{{table_estudos.ano_turma}}º Ano</td>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if table_estudos.ano_turma == '8' or table_estudos.ano_turma == '9' %}
+                        {% if eja4 %}
+                            <td>{{table_estudos.ano_turma}}º Ano | EJA4</td>
+                        {% else %}
+                             <td>{{table_estudos.ano_turma}}º Ano</td>
+                        {% endif %}
+                    {% endif %}
+                   
+                                        
+                    {% if eja4 %}
+                        {% if table_estudos.ano_turma == '8' or table_estudos.ano_turma == '9' %}
+                            <td>{{table_estudos.ano_turma}}º Ano | EJA4</td>
+                        {% endif %}
+                    {% endif %}      
+
                     {% if table_estudos.ano_letivo %}
                         <td>{{table_estudos.ano_letivo}}</td>
                     {% else %}

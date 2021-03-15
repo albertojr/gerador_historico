@@ -507,11 +507,6 @@ def atualizar_oferta_anual(cod_aluno,ano_turma,carga_hr_turma):
         data = {"errors": "true", "messages":"Erro ao atualizar Oferta Anual"}        
         return data
 
-def delete_oferta_anual(obj):
-    print(obj.cod_oferta_anual)
-   
-    
-
 def relatorio_pdf(request,cod_aluno):
     qs_aluno = Aluno.objects.filter(cod_aluno=cod_aluno).values()
     
@@ -522,11 +517,9 @@ def relatorio_pdf(request,cod_aluno):
         ls_ch_anual = list()
         tem_historico = False
         dados_aluno = {}
-        ejas = {'eja1':False,'eja2':False,'Eja3':False,'Eja4':False}
        
-        qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno).values('nota','tipo_eja')
-
-        qsturmas = Turma.objects.filter(status_turma=True)
+        qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno).values(
+            'nota','tipo_eja')
 
         for aluno in qs_aluno:
             dados_aluno = {'nome':aluno['nome_aluno'].upper(),
@@ -539,7 +532,9 @@ def relatorio_pdf(request,cod_aluno):
 
             if aluno['filiacao_aluno2'] != None:
                 dados_aluno['filiacao_2'] = aluno['filiacao_aluno2'].upper()
-                          
+        
+        qsturmas = Turma.objects.filter(status_turma=True)
+                 
         for turmas in qsturmas.distinct('ano_turma'):
             ls_turmas.append({'ano_turma':turmas.ano_turma})
             dict_estudos = {'ano_turma':turmas.ano_turma}
@@ -549,7 +544,7 @@ def relatorio_pdf(request,cod_aluno):
             ano_turma_estudo__ano_turma=turmas.ano_turma)
 
             for estudos in qs_estudos:
-                if  estudos.ano_letivo_estudo:
+                if estudos.ano_letivo_estudo:
                     dict_estudos['ano_letivo'] = estudos.ano_letivo_estudo.year
                 dict_estudos['escola'] = estudos.escola_ensino_estudo.upper()
                 dict_estudos['municipio'] = estudos.municipio_estudo.upper()
@@ -602,7 +597,7 @@ def relatorio_pdf(request,cod_aluno):
                 for ano_turma in range(1,10):
                     notas_por_turma = hs_notas_por_disciplina.filter(turma_historico__ano_turma = ano_turma)
                     
-                    if notas_por_turma:
+                    if notas_por_turma and notas_por_turma[0]["nota"] != None:
                         lista_notas.append(str(notas_por_turma[0]["nota"]))
 
                     else:
@@ -631,11 +626,14 @@ def relatorio_pdf(request,cod_aluno):
             'turmas': ls_turmas,
             'estudos_feitos':ls_estudos_feitos,
             'disciplinas':ls_disciplinas,
-            'tipo_eja':ejas,
             'historico':tem_historico,
             'qnt_disciplinas':len(ls_disciplinas),
             'oferta_anual':ls_ch_anual,
-            'data':data_hoje()
+            'data':data_hoje(),
+            'eja1':eja1,
+            'eja2':eja2,
+            'eja3':eja3,
+            'eja4':eja4,
             }
         return RenderPdf.render('relatorios/historico_pdf.html', 
         params, 

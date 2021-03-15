@@ -17,9 +17,9 @@
                         {% for turma in oferta_anual %}
                             <td>
                                 {% if turma.ch_anual %}
-                                    <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="{{turma.ch_anual}}"></div>
+                                    <input id=input-oferta-anual-{{turma.ano_turma}} class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="{{turma.ch_anual}}"></div>
                                 {% else %}  
-                                    <input class="form-control is-warning form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="{{turma.ch_anual}}"></div>
+                                    <input id=input-oferta-anual-{{turma.ano_turma}} class="form-control is-warning form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="{{turma.ch_anual}}"></div>
                                 {% endif %}
                             </td>                     
                         {% endfor %}
@@ -29,14 +29,14 @@
                         {% for turma in turmas  %}                                           
                             <td>
                                 {% if turma.ano_turma < '5' %}
-                                    <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="880"></div>
+                                    <input id=input-oferta-anual-{{turma.ano_turma}} class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="880"></div>
 
                                 {%else %}
                                     {%if turma.ano_turma == '5' %}
-                                        <input class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="814"></div>
+                                        <input id=input-oferta-anual-{{turma.ano_turma}} class="form-control is-valid form-control-sm text-center" type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$" value="814"></div>
                                     
                                     {% else %}
-                                        <input class="form-control is-warning form-control-sm text-center " type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$"></div>
+                                        <input id=input-oferta-anual-{{turma.ano_turma}} class="form-control is-warning form-control-sm text-center " type="number" onwheel="this.blur()" step="1" min="0" placeholder="Digite" pattern="[0-9]+$"></div>
                                     {% endif %} 
                                         
                                 {% endif %}         

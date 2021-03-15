@@ -7,11 +7,10 @@
                 <div class="form-group col-sm-1">
                     <div class="form-check">
                         {% if eja1 %}
-                            <input class="form-check-input" type="checkbox" id="check_eja1"
-                                onchange="onchange_checkbox()" checked>
+                            <input class="form-check-input" type="checkbox" id="check_eja1" checked>
                         {%else%}
                             <input class="form-check-input" type="checkbox" id="check_eja1"
-                                onchange="onchange_checkbox()" >
+                                onchange="onchange_check_eja1()" >
                         {% endif %}
                         <label class="form-check-label">EJA1</label>
                     </div>
@@ -20,12 +19,11 @@
                     <div class="form-check">
     
                         {% if eja2 %}
-                            <input checked class="form-check-input" type="checkbox" id="check_eja2"
-                        onchange="onchange_checkbox()">
+                            <input checked class="form-check-input" type="checkbox" id="check_eja2">
 
                         {%else%}
                             <input class="form-check-input" type="checkbox" id="check_eja2"
-                            onchange="onchange_checkbox()">
+                            onchange="onchange_check_eja2()">
                         {% endif %}      
                         <label class="form-check-label">EJA2</label>
                     </div>

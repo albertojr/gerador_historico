@@ -79,34 +79,15 @@ const Toast = Swal.mixin({
 })
 
 function onchange_checkbox() {
-    //função reponsavel por desabilitar inputs nao usadados
-    var checked_eja1 = $("#check_eja1").is(":checked");//eja1
-    var checked_eja2 = $("#check_eja2").is(":checked");//eja2
+
     var checked_eja3 = $("#check_eja3").is(":checked");//eja3
     var checked_eja4 = $("#check_eja4").is(":checked");//eja4
 
-    if (checked_eja1 == true) {
-        $("#item-0 .form-control").prop('disabled', true)
-        $("#item-1 .form-control").prop('disabled', true)
-    }
-    else {
-        $("#item-0 .form-control").prop('disabled', false)
-        $("#item-1 .form-control").prop('disabled', false)
-    }
-
-    if (checked_eja2 == true) {
-        $(".turma4 .form-control").prop('disabled', true)
-
-    }
-    else {
-        $(".turma4 .form-control").prop('disabled', false)
-    }
-
     if (checked_eja3 == true) {
-        $(".turma6 .form-control").prop('disabled', true)
+        document.getElementById("input-oferta-anual-3").setAttribute('value', '');
     }
     else {
-        $(".turma6 .form-control").prop('disabled', false)
+        document.getElementById("input-oferta-anual-4").setAttribute('value', '');
     }
 
     if (checked_eja4 == true) {
@@ -117,6 +98,55 @@ function onchange_checkbox() {
     }
 
 }
+function onchange_check_eja1() {
+    //função reponsavel por limpar os inputs da oferta anual
+
+    var checked_eja1 = $("#check_eja1").is(":checked");//eja1
+
+    if (checked_eja1 == true) {
+        document.getElementById("input-oferta-anual-1").setAttribute('value', '');
+        document.getElementById("input-oferta-anual-1").setAttribute('class', 'form-control is-warning form-control-sm text-center')
+
+        document.getElementById("input-oferta-anual-2").setAttribute('value', '');
+        document.getElementById("input-oferta-anual-2").setAttribute('class', 'form-control is-warning form-control-sm text-center');
+
+        document.getElementById("input-oferta-anual-3").setAttribute('value', '');
+        document.getElementById("input-oferta-anual-3").setAttribute('class', 'form-control is-warning form-control-sm text-center');
+    }
+    else {
+        document.getElementById("input-oferta-anual-1").setAttribute('value', '880');
+        document.getElementById("input-oferta-anual-1").setAttribute('class', 'form-control is-valid form-control-sm text-center')
+
+        document.getElementById("input-oferta-anual-2").setAttribute('value', '880');
+        document.getElementById("input-oferta-anual-2").setAttribute('class', 'form-control is-valid form-control-sm text-center')
+
+        document.getElementById("input-oferta-anual-3").setAttribute('value', '880');
+        document.getElementById("input-oferta-anual-3").setAttribute('class', 'form-control is-valid form-control-sm text-center')
+    }
+}
+
+function onchange_check_eja2() {
+    //função reponsavel por limpar os inputs da oferta anual do eja2 (turmas 4 e 5)
+
+    var checked_eja2 = $("#check_eja2").is(":checked");//eja2
+
+    if (checked_eja2 == true) {
+        document.getElementById("input-oferta-anual-4").setAttribute('value', '');
+        document.getElementById("input-oferta-anual-4").setAttribute('class', 'form-control is-warning form-control-sm text-center');
+
+        document.getElementById("input-oferta-anual-5").setAttribute('value', '');
+        document.getElementById("input-oferta-anual-5").setAttribute('class', 'form-control is-warning form-control-sm text-center');
+
+    }
+    else {
+        document.getElementById("input-oferta-anual-4").setAttribute('value', '880');
+        document.getElementById("input-oferta-anual-4").setAttribute('class', 'form-control is-valid form-control-sm text-center');
+
+        document.getElementById("input-oferta-anual-5").setAttribute('value', '814');
+        document.getElementById("input-oferta-anual-5").setAttribute('class', 'form-control is-valid form-control-sm text-center');
+    }
+}
+
 function add_row_table() {
     //criando linha
     var tbody_table = document.getElementById("row_notas");
