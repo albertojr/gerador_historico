@@ -216,7 +216,6 @@ function get_notas_tabela() {
 }
 
 function get_ch_anual() {
-
     var array_ch_anos_turma = []
     var obj_ch_anos = {};
 
@@ -274,11 +273,22 @@ $('#form_table_notas').on('submit', function (event) {
     novasNotas = get_notas_tabela()
     dadosTabelaEstudos = get_dados_tabela_estudos()
 
+    if ($('#id_alunos').val() == '') {
+        Swal.fire({
+            title: "Selecione um aluno por favor!",
+            text: 'Clique em ok para continuar',
+            icon: 'info',
+            confirmButtonText: 'Ok'
+        })
+        $("#btn_salvar_notas").attr("disabled", false);
+
+    }
+
     $.ajax({
         headers: { "X-CSRFToken": $.cookie("csrftoken") },
         type: "POST",
         contentType: "application/json",
-        url: "tabela/notas",
+        url: "/historicos/tabela/notas",
         data: JSON.stringify(novasNotas), // convert array to JSON
         dataType: 'json',
         success: function (data) {
@@ -288,7 +298,7 @@ $('#form_table_notas').on('submit', function (event) {
                 headers: { "X-CSRFToken": $.cookie("csrftoken") },
                 type: "POST",
                 contentType: "application/json",
-                url: "tabela/estudos",
+                url: "/historicos/tabela/estudos",
                 data: JSON.stringify(dadosTabelaEstudos), // convert array to JSON
                 dataType: 'json',
 
@@ -300,7 +310,7 @@ $('#form_table_notas').on('submit', function (event) {
                         headers: { "X-CSRFToken": $.cookie("csrftoken") },
                         type: "POST",
                         contentType: "application/json",
-                        url: "tabela/ofertaanual",
+                        url: "/historicos/tabela/ofertaanual",
                         data: JSON.stringify(get_ch_anual()), // convert array to JSON
                         dataType: 'json',
 
@@ -357,6 +367,13 @@ $('#form_table_notas').on('submit', function (event) {
         },
     });
 });
+
+function click_pesquisar() {
+    var cod_aluno = $('#id_alunos').val();
+    $('#form_busca').attr('action', '/historicos/update/' + cod_aluno);
+    $('#form_busca').submit()
+}
+
 
 function gerar_pdf() {
     var cod_aluno = $("#id_alunos").val();

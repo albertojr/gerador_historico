@@ -18,10 +18,10 @@
 <div class="card">
     <!-- /.card-header -->
     <div class="card-body">
-        <a class="btn btn-primary btn-sm" href="{% url 'add_historicos' %}" id="btnPdf"><i
+        <a class="btn btn-primary btn-sm" href="{% url 'add_historicos' 0 %}" id="btnPdf"><i
                 class="fas fa-plus-circle"></i>
             <b>Criar Histórico</b></a>
-        <table id="historicos_aluno" class="table table-bordered table-striped">
+        <table id="historicos_aluno" class="table table-hover ">
             <thead>
                 <tr>
                     <th>Cod.</th>
@@ -51,7 +51,7 @@
     </a>
 </li>
 <li class="nav-item">
-    <a href="{% url 'add_historicos' %}" class="nav-link">
+    <a href="{% url 'add_historicos' 0%}" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
         <p>Criar histórico</p>
     </a>

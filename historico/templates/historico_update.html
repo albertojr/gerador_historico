@@ -34,7 +34,7 @@
 
 {%block header%}
 <div class="col-sm-6">
-    <h1>Alimentar Histórico</h1>
+    <h1>Atualizar Histórico</h1>
 </div>
 <div class="col-sm-6">
     <ol class="breadcrumb float-sm-right">
@@ -49,18 +49,19 @@
         <h5>Selecione um aluno</h5>
     </div>
     <div class="card-body">
-        <form method="POST" id="form_busca" action="{% url 'add_historicos' 0 %}">
+        <form method="GET" id="form_busca" action="#">
             {% csrf_token %}
             <div class="row">
                 <label>Alunos:</label>
                 <div class="col-md-6">
                     <div class="form-group">
-                        {% render_field form_busca_aluno.alunos class="form-control select2bs4" %}
+                        {% render_field form_busca_aluno.alunos class="form-control select2bs4"%}
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="col">
-                        <button class="btn btn-secondary " type="submit"><i class="fas fa-search"></i></button>
+                        <button class="btn btn-secondary" id="btn_pesquisar" onclick="click_pesquisar()"
+                            type="button"><i class="fas fa-search"></i></button>
                         <a class="btn btn-success" href="/admin/aluno/aluno/add/" target="_blank">
                             <i class="fas fa-user-plus"></i> Aluno</a>
                     </div>
@@ -78,7 +79,7 @@
 
         </ul>
     </div><!-- /.card-header -->
-    <form method="POST" id="form_table_notas" action="{% url 'add_historicos' 0 %}">
+    <form method="POST" id="form_table_notas" action="{% url 'update_historicos' cod_aluno %}">
         <div class="card-body">
             <div class="tab-content" id="pills-tabContent">
                 {% csrf_token %}
@@ -95,7 +96,7 @@
             <div class="row" style="margin-top: 20px;">
                 <div class="col-10">
                     <button id="btn_salvar_notas" class="btn btn-primary" type="submit"> <i class="fas fa-save"></i>
-                        Salvar</button>
+                        Atualizar</button>
                     <a id="btn_gerar_pdf" href="#" class="btn btn-info" onclick="gerar_pdf()"><i
                             class="far fa-file-pdf"></i> GERAR PDF</a>
                 </div>
@@ -124,7 +125,6 @@
         <button class="btn btn-success" type="button" onclick="add_row_table();"><i class="fas fa-plus-circle"></i></button>    
     </td>  
 </script>
-
 
 {% endblock %}
 

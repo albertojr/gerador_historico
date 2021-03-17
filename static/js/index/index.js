@@ -23,11 +23,15 @@ $(document).ready(function () {
 
         },
         "columns": [
-            { "data": "aluno__cod_aluno", className: "text-center" },
+            {
+                "data": "aluno__cod_aluno", className: "text-center",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    $(nTd).html('<h5><a href="#" id="link" class="badge badge-pill badge-primary">' + oData.aluno__cod_aluno + '</h5></a>');
+                }
+            },
             { "data": "aluno__nome_aluno" },
             { "data": "aluno__filiacao_aluno1", className: "text-center" },
             { "data": "aluno__dt_nascimento_aluno", className: "text-center" },
-
 
             {
                 "data": "Action", "render": function (data, type, row, meta) {
@@ -63,10 +67,19 @@ $(document).ready(function () {
 
 
 $("#historicos_aluno tbody").on("click", "tr #btnPdf", function () {
-
     var table = $('#historicos_aluno').DataTable();
     var objTableHistoricos = table.row($(this).parents('tr')).data();
     var cod_aluno = objTableHistoricos['aluno__cod_aluno'];
     url = "/historicos/relatorio/pdf/" + cod_aluno;
     window.location.href = url
+});
+
+
+$("#historicos_aluno tbody").on("click", "tr #link", function () {
+    var table = $('#historicos_aluno').DataTable();
+    var objTableHistoricos = table.row($(this).parents('tr')).data();
+    var cod_aluno = objTableHistoricos['aluno__cod_aluno'];
+    url = "/historicos/update/" + cod_aluno;
+    window.location.href = url
+
 });

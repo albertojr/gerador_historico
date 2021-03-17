@@ -12,6 +12,8 @@ from aluno.models import Aluno
 from weasyprint import HTML, CSS
 from django.forms.models import inlineformset_factory
 from django.forms import formset_factory
+from django.shortcuts import redirect
+
 
 
 # Create your views here.
@@ -34,26 +36,30 @@ def historicos_json(request):
     return HttpResponse(historicos_json)
 
 @login_required
-def add_form_line_historico(request):
+def add_form_line_historico(request,cod_aluno):
     context = {}
-    cod_aluno = request.POST.get('alunos')
+    #nao tiver parametro na URL pega do request
+    cod_aluno = request.POST.get('alunos') or cod_aluno
 
     qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno).values(
         "disciplina_historico","nota","tipo_eja")
     
     qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
-            'ano_turma').order_by("ano_turma")
+    'ano_turma').order_by("ano_turma")
+
     
-    forms = Form_tabela_historico()
-
-    #aqui permite criar vários forms do mesmo jeito
-    disciplinas_form_set = formset_factory(Form_tabela_historico,extra=0)
-
-    ls_disciplinas = list()
-
-    if request.method == 'POST': 
+    #se já tiver nota, ou seja, é para atualizar/update
+    if qs_historicos:
+        return redirect('update_historicos',cod_aluno=cod_aluno)
+    
+    if request.method == 'POST' or cod_aluno: 
         ls_estudos_feitos = list()
         ls_ch_anual = list()
+        ls_disciplinas = list()
+
+        #aqui permite criar vários forms do mesmo jeito
+        disciplinas_form_set = formset_factory(Form_tabela_historico,extra=0)
+
         #valores da tabela estudos e oferta anual     
         for turmas in qsturmas.distinct('ano_turma'):
             dict_estudos = {'ano_turma':turmas['ano_turma'],'ano_letivo':'','escola':'',
@@ -85,81 +91,13 @@ def add_form_line_historico(request):
             ls_ch_anual.append(dict_oferta_anual)
         #fim dos valores estudos
 
-        if qs_historicos:
-            ls_turmas = list()
-            historico_disciplina = list()
-
-            #valores do eja:
-            eja1=False
-            eja2=False
-            eja3=False
-            eja4=False
-           
-            for ejas in qs_historicos:
-                if ejas['tipo_eja'] != None and ejas['tipo_eja']:
-                    if ejas['tipo_eja'] == 'eja1':
-                        eja1=True
-                    elif ejas['tipo_eja'] == 'eja2':
-                        eja2 = True
-                    elif ejas['tipo_eja'] == 'eja3':
-                        eja3=True
-                    elif ejas['tipo_eja'] == 'eja4':
-                        eja4 = True
-
-            #add notas em cada disciplina          
-            for qs_disciplinas in Disciplina.objects.all().distinct("cod_disciplina","nome_disciplina").values():
-                lista_notas=list()
-                
-                hs_notas_por_disciplina = qs_historicos.filter(
-                    disciplina_historico=qs_disciplinas['cod_disciplina'])
-                
-                #se essa disciplina tiver no histórico
-                if hs_notas_por_disciplina:
-                    #add a lista para inicializar no form
-                    ls_disciplinas.append({'disciplinas':qs_disciplinas['cod_disciplina']})
-
-                    for ano_turma in range(1,10):
-                        notas_por_turma = hs_notas_por_disciplina.filter(turma_historico__ano_turma = ano_turma)
-                        
-                        if notas_por_turma:
-                            lista_notas.append(str(notas_por_turma[0]["nota"]))
-
-                        else:
-                            lista_notas.append(None)
-                    
-                    historico_disciplina.append({"cod_disciplina_hs":qs_disciplinas['cod_disciplina'],
-                    "notas":lista_notas})
-                # se não tiver no historico, add a lista apenas se for base
-                else:
-                    disciplina_base = Disciplina.objects.filter(
-                        cod_disciplina=qs_disciplinas['cod_disciplina'],historico_base=True).distinct("cod_disciplina","nome_disciplina")
-                    if disciplina_base:
-                        historico_disciplina.append({"cod_disciplina_hs":qs_disciplinas['cod_disciplina'],
-                        "notas":[None,None,None,None,None,None,None,None,None]})
-                        #add a lista para inicializar no form
-                        ls_disciplinas.append({'disciplinas':qs_disciplinas['cod_disciplina']})
-            
-            #fim do add nota as disciplinas
-            context = {
-            'form_busca_aluno': BuscaHistoricoForm(initial={'alunos':cod_aluno}),
-            'forms': forms,
-            'estudos_feitos':ls_estudos_feitos,
-            'historicos':historico_disciplina,
-            'form_set':disciplinas_form_set(initial=ls_disciplinas),
-            'eja1':eja1,
-            'eja2':eja2,
-            'eja3':eja3,
-            'eja4':eja4,
-            'turmas':qsturmas,
-            'oferta_anual':ls_ch_anual
-             } 
-            return render(request, 'historico.html', context)
             
         #pega as disciplinas para inicializar no select2
         #aqui, pega apenas as disciplinas base para inicializar a tabela
         for disciplina in Disciplina.objects.filter(historico_base=True).distinct("cod_disciplina","nome_disciplina"):
             ls_disciplinas.append({'disciplinas':disciplina.cod_disciplina})
-       
+
+        forms = Form_tabela_historico()
         context = {
             'form_busca_aluno': BuscaHistoricoForm(initial={'alunos':cod_aluno}),
             'form_set': disciplinas_form_set(initial=ls_disciplinas),
@@ -174,9 +112,131 @@ def add_form_line_historico(request):
         context = {
             'form_busca_aluno': BuscaHistoricoForm(initial={'alunos':cod_aluno}),
             'turmas':qsturmas,
-
         }
         return render(request, 'historico.html', context)
+
+@login_required
+def update_form_line_historico(request,cod_aluno):
+    context = {}
+    ls_estudos_feitos = list()
+    ls_ch_anual = list()
+
+    qs_historicos = HistoricoAluno.objects.filter(aluno__cod_aluno=cod_aluno).values(
+        "disciplina_historico","nota","tipo_eja")
+    
+    qsturmas = Turma.objects.filter(status_turma=True).values('cod_turma',
+            'ano_turma').order_by("ano_turma")
+    
+    forms = Form_tabela_historico()
+
+    #aqui permite criar vários forms do mesmo jeito
+    disciplinas_form_set = formset_factory(Form_tabela_historico,extra=0)
+
+    ls_disciplinas = list()
+    #se tiver histórico, ou seja update
+    if qs_historicos:
+        ls_turmas = list()
+        historico_disciplina = list()
+
+        #valores do eja:
+        eja1=False
+        eja2=False
+        eja3=False
+        eja4=False
+        
+        for ejas in qs_historicos:
+            if ejas['tipo_eja'] != None and ejas['tipo_eja']:
+                if ejas['tipo_eja'] == 'eja1':
+                    eja1=True
+                elif ejas['tipo_eja'] == 'eja2':
+                    eja2 = True
+                elif ejas['tipo_eja'] == 'eja3':
+                    eja3=True
+                elif ejas['tipo_eja'] == 'eja4':
+                    eja4 = True
+
+        #add notas em cada disciplina          
+        for qs_disciplinas in Disciplina.objects.all().distinct("cod_disciplina","nome_disciplina").values():
+            lista_notas=list()
+            
+            hs_notas_por_disciplina = qs_historicos.filter(
+                disciplina_historico=qs_disciplinas['cod_disciplina'])
+            
+            #se essa disciplina tiver no histórico
+            if hs_notas_por_disciplina:
+                #add a lista para inicializar no form
+                ls_disciplinas.append({'disciplinas':qs_disciplinas['cod_disciplina']})
+
+                for ano_turma in range(1,10):
+                    notas_por_turma = hs_notas_por_disciplina.filter(turma_historico__ano_turma = ano_turma)
+                    
+                    if notas_por_turma:
+                        lista_notas.append(str(notas_por_turma[0]["nota"]))
+
+                    else:
+                        lista_notas.append(None)
+                
+                historico_disciplina.append({"cod_disciplina_hs":qs_disciplinas['cod_disciplina'],
+                "notas":lista_notas})
+            # se não tiver no historico, add a lista apenas se for base
+            else:
+                disciplina_base = Disciplina.objects.filter(
+                    cod_disciplina=qs_disciplinas['cod_disciplina'],historico_base=True).distinct("cod_disciplina","nome_disciplina")
+                if disciplina_base:
+                    historico_disciplina.append({"cod_disciplina_hs":qs_disciplinas['cod_disciplina'],
+                    "notas":[None,None,None,None,None,None,None,None,None]})
+                    #add a lista para inicializar no form
+                    ls_disciplinas.append({'disciplinas':qs_disciplinas['cod_disciplina']})
+        
+        for turmas in qsturmas.distinct('ano_turma'):
+            dict_estudos = {'ano_turma':turmas['ano_turma'],'ano_letivo':'','escola':'',
+            'municipio':'','uf':'','resultado':''}
+            
+            #verifica se tem algo na tabela de estudos
+            qs_estudos = EstudosHistorico.objects.filter(historico_estudo__aluno__cod_aluno=cod_aluno,
+            ano_turma_estudo__ano_turma=turmas['ano_turma'])
+
+            for estudos in qs_estudos:
+                if  estudos.ano_letivo_estudo:
+                    dict_estudos['ano_letivo'] = estudos.ano_letivo_estudo.year
+                dict_estudos['escola'] = estudos.escola_ensino_estudo
+                dict_estudos['municipio'] = estudos.municipio_estudo
+                dict_estudos['uf'] = estudos.estado_estudo
+                dict_estudos['resultado'] = estudos.resultado_estudo
+            ls_estudos_feitos.append(dict_estudos)
+            
+            #montando oferta anual
+            dict_oferta_anual = {'ano_turma':turmas['ano_turma'],'ch_anual':''}
+
+            oferta_anual = OfertaAnual.objects.filter(
+                aluno__cod_aluno=cod_aluno,turma__ano_turma=turmas['ano_turma']).distinct(
+                "turma__ano_turma")
+            
+            for ch_anual in oferta_anual:
+                dict_oferta_anual['ch_anual'] = ch_anual.ch_hr_anual
+            
+            ls_ch_anual.append(dict_oferta_anual)
+        #fim dos valores estudos
+        #fim do add nota as disciplinas
+        context = {
+            'form_busca_aluno': BuscaHistoricoForm(initial={'alunos':cod_aluno}),
+            'forms': forms,
+            'estudos_feitos':ls_estudos_feitos,
+            'historicos':historico_disciplina,
+            'form_set':disciplinas_form_set(initial=ls_disciplinas),
+            'eja1':eja1,
+            'eja2':eja2,
+            'eja3':eja3,
+            'eja4':eja4,
+            'turmas':qsturmas,
+            'oferta_anual':ls_ch_anual,
+            'cod_aluno':cod_aluno,
+        } 
+        return render(request, 'historico_update.html', context)
+
+    #não tem historico ainda, ou seja, post
+    else:
+        return redirect('add_historicos',cod_aluno=cod_aluno)
 
 @login_required
 def tabela_notas_historico(request):

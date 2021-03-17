@@ -17,6 +17,7 @@ class DisciplinaSelect2(s2forms.Select2Widget):
 class BuscaHistoricoForm(forms.Form):
     alunos = forms.ModelChoiceField(
         queryset=Aluno.objects.all(),
+        required=True,
     )
 
     class Meta:
@@ -26,7 +27,7 @@ class BuscaHistoricoForm(forms.Form):
 class Form_tabela_historico(forms.ModelForm):
     disciplinas = forms.ModelChoiceField(
         queryset=Disciplina.objects.all().order_by('nome_disciplina'),
-        required=False,
+        required=True,
     )
 
     class Meta:

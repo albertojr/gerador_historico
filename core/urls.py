@@ -13,8 +13,6 @@ urlpatterns = [
     path('', views.home_geral,name='home_geral'),
     path('historicos/', include('historico.urls')),
     path("select2/", include("django_select2.urls")),
-
-
 ]
 
 admin.site.site_header = 'Gerador de Históricos'
